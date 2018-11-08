@@ -59,37 +59,53 @@
         <div class="card shadow-sm">
           <div class="card-body">
             <h3 class="mb-0">
-            <p class="text-center">
-              <a class="text-dark" href="#">Rekrutacja</a>
-            </p>
+              <h3 class='text-dark text-center'><b>Rekrutacja</b></a>
             </h3>
             <br/>
+            {% if class_list %}
             <table class='table'>
                 <thead>
                     <th scope="col">Status</th>
                     <th scope="col">Klasa</th>
                     <th scope="col">Role</th>
                 </thead>
+                {% for object in class_list %}
                 <tbody>
-                    <td>OTWARTA</td>
-                    <td><img src="/static/class/deathknight.jpg" width="30" class='rounded' alt='Death Knight'></td>
+                    {% if object.rekrutacja.tank or object.rekrutacja.heal or object.rekrutacja.melee or object.rekrutacja.ranged %}
+                    <th scope="row"><span class="badge badge-success">OTWARTA</span></th>
+                    <td><img src="{{ MEDIA_URL }}{{ object.icon }}" class='rounded' height="25"/> | {{ object.name }}</td>
+                    <td>{% if object.rekrutacja.tank %}<img src="/static/rekrutacja/tank.png">{% endif %}
+                        {% if object.rekrutacja.heal %}<img src="/static/rekrutacja/heal.png">{% endif %}
+                        {% if object.rekrutacja.melee %}<img src="/static/rekrutacja/melee.png">{% endif %}
+                        {% if object.rekrutacja.ranged %}<img src="/static/rekrutacja/ranged.png">{% endif %}</td>
+                    {% endif %}
+                    
                 </tbody>
+                {% endfor %}
+                {% for object in class_list %}
                 <tbody>
-                    <td>OTWARTA</td>
-                    <td><img src="/static/class/dh.jpg" width="30" class='rounded'></td>
-                    <td><img src="/static/rekrutacja/tank.png"><img src="/static/rekrutacja/melee.png"></td>
+                    {% if not object.rekrutacja.tank and not object.rekrutacja.heal and not object.rekrutacja.melee and not object.rekrutacja.ranged %}
+                    <th scope="row"><span class="badge badge-secondary">ZAMKNIĘTA</span></th>
+                    <td><img src="{{ MEDIA_URL }}{{ object.icon }}" class='rounded' height="25"/> | {{ object.name }}</td>
+                    <td></td>
+                    {% endif %}
                 </tbody>
-                
-
-            
+                {% endfor %}
             </table>
-            <div style="height: 18px;" class="leg">
-                <img src="grafika/ico/tank.png" alt="Tank" /> - Tank 
-                <img src="grafika/ico/heal.png" alt="Healer" > - Healer 
-                <img src="grafika/ico/ranged.png" alt="Ranged" > - Ranged 
-                <img src="grafika/ico/melee.png" alt="Melee" > - Melee</div>
-
-            <div style="font-size: 10px;">Osoby niezainteresowane raidami mogą składać podania, nawet jeśli rekrutacja dla ich klasy jest zamknięta.</div></div>
+            <img src="/static/rekrutacja/tank.png"> - Tank
+            <img src="/static/rekrutacja/heal.png"> - Heal
+            <img src="/static/rekrutacja/melee.png"> - Melee
+            <img src="/static/rekrutacja/ranged.png"> - Ranged
+            {% else %}
+            <p class='text-center'>Rekrutacja zamknięta.</p>
+            {% endif %}
+            <p class="text-right">
+            <a class="btn btn-danger" href="{% url 'rekrutacja_lista' %}" role="button">Edytuj</a>
+            </p>
+            <p class="text-center">
+            <a class="btn btn-success" href="{% url 'rekrutacja_lista' %}" role="button">Złóż podanie</a>
+            </p>
+            <div style="font-size: 13px;">Osoby niezainteresowane raidami mogą składać podania, nawet jeśli rekrutacja dla ich klasy jest zamknięta.</div>
           </div>
         </div>
       </div>

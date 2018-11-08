@@ -6,7 +6,7 @@ body {
 }
 
 nav {
-  font-family: 'Carter One', cursive;
+  font-family: 'IBM Plex Sans', sans-serif;
 }
 
 .blog-header {
@@ -15,7 +15,7 @@ nav {
 }
 
 .blog-header-logo {
-  font-family: 'Carter One', cursive;
+  font-family: 'IBM Plex Sans', sans-serif;
   font-size: 2.25rem;
 }
 
@@ -24,7 +24,7 @@ nav {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Carter One', cursive;
+  font-family: 'IBM Plex Sans', sans-serif;
 }
 
 .display-4 {

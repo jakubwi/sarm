@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="card shadow-sm">
+        <div class="card-body">
+          <h3 class="mb-0">
+          <p class="text-center">
+            <h3 class="text-dark text-center">
+                Czy jesteś pewien, że chcesz usunąć klasę <strong>"{{ klasa.name }}"</strong>?
+          </p>
+          </h3>
+
+          <br/>
+          <a class="btn btn-secondary" href="{% url 'rekrutacja_lista' %}" role="button">Anuluj</a>
+          <form action="" method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <p class="text-right">
+                <input class="btn btn-danger" type="submit" value="USUŃ KLASĘ">
+                </p>
+            </form>
+            
+          </div>
+        </div>
+
+
+{% endblock %}

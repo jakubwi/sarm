@@ -1,25 +1,32 @@
 from django.db import models
 
 class Klasa(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    tank = models.BooleanField()
-    heal = models.BooleanField()
-    melee = models.BooleanField()
-    ranged = models.BooleanField()
+    name = models.CharField(max_length=50, unique=True, help_text="Tworząc nową klasę, zaznacz role w polu 'rekrutacja'.")
+    icon = models.ImageField(upload_to='class_icons', blank=True)
+    tank = models.BooleanField(default=False)
+    heal = models.BooleanField(default=False)
+    melee = models.BooleanField(default=False)
+    ranged = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = 'Klasy'
+        ordering = ('name',)
 
     def __str__(self):
         return self.name
     
 class Rekrutacja(models.Model):
-    klasa = models.ForeignKey(Klasa, on_delete=models.CASCADE)
-    rekrutacjaTank = models.BooleanField()
-    rekrutacjaHeal = models.BooleanField()
-    rekrutacjaMelee = models.BooleanField()
-    rekrutacjaRanged = models.BooleanField()
+    klasa = models.OneToOneField(Klasa, on_delete=models.CASCADE)
+    tank = models.BooleanField(default=False)
+    heal = models.BooleanField(default=False)
+    melee = models.BooleanField(default=False)
+    ranged = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = 'Rekrutacja'
+        ordering = ('klasa',)
+
+    def __str__(self):
+        return self.klasa.name
+
 
