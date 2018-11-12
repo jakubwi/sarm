@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="card shadow-sm">
+        <div class="card-body">
+          <h3 class="mb-0">
+          <p class="text-center">
+            <h3 class="text-dark text-center">
+                <div class="alert alert-danger" role="alert">
+                Czy jesteś pewien, że chcesz usunąć rasę <strong>"{{ rasa.name }}"</strong>?
+                </div>
+          </p>
+          </h3>
+
+          <br/>
+          <a class="btn btn-secondary" href="{% url 'panel_moda' %}" role="button">Anuluj</a>
+          <form action="" method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <p class="text-right">
+                <input class="btn btn-danger" type="submit" value="USUŃ RASĘ">
+                </p>
+            </form>
+            
+          </div>
+        </div>
+
+
+{% endblock %}

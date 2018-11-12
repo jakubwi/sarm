@@ -9,5 +9,4 @@ urlpatterns = [
     path('klasa/create', views.KlasaCreateView.as_view(), name='klasa_create'),
     path('klasa/<int:pk>/delete', views.KlasaDeleteView.as_view(), name='klasa_delete'),
     path('rekrutacja/<int:pk>/create', views.RekrutacjaCreateView.as_view(), name='rekrutacja_create'),
-
 ]

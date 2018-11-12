@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+
+{% block content %}
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h3 class="text-dark text-center">Złóż aplikację:</h3>
+            <br/>
+            <a class="btn btn-primary" href="{% url 'aplikacja_raid' %}" role="button">Raid</a>
+            <a class="btn btn-secondary" href="{% url 'aplikacja_social' %}" role="button">Social</a>
+            
+        </div>
+    </div>
+{% endblock %}
+     

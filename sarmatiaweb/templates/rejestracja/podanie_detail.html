@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+
+{% block content %}
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {% if podanie.infoRaidDoswiadczenie == '' and podanie.infoRaidWiedza == '' and podanie.infoRaidDni == '' %}
+            <h3 class="text-dark text-center">Aplikacja Socjalna: <strong>{{podanie.name}}</strong></h3>
+            {% else %}
+            <h3 class="text-dark text-center">Aplikacja Raidowa: <strong>{{podanie.name}}</strong></h3>
+            {% endif %}
+            <br/>
+            <table class="table table-striped table-sm">
+                <tbody>
+                    <tr>
+                        <td>Data złożenia podania:</td>
+                        <td>{{podanie.date}}</td>
+                    </tr>
+                    <tr>
+                        <td>Serwer:</td>
+                        <td>{{podanie.serwer}}</td>
+                    </tr>
+                    <tr>
+                        <td>Rasa:</td>
+                        <td>{% if podanie.rasa == None %}
+                                Usunięta
+                            {% else %}
+                                {{podanie.rasa}}
+                            {% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td>Klasa:</td>
+                        <td>{% if podanie.klasa == None %}
+                                Usunięta
+                            {% else %}
+                                {{podanie.klasa}}
+                            {% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td>Main Spec:</td>
+                        <td>{% if podanie.mainspec == None %}
+                                Usunięty
+                            {% else %}
+                                {{podanie.mainspec}}
+                            {% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td>Off Spec:</td>
+                        <td>{% if podanie.offspec == None %}
+                                Usunięty
+                            {% else %}
+                                {{podanie.offspec}}
+                            {% endif %}</td>
+                    </tr>
+                    {% if podanie.infoRaidDoswiadczenie != '' and podanie.infoRaidWiedza != '' and podanie.infoRaidDni != '' %}
+                    <tr>
+                        <td>Doświadczenie raidowe:</td>
+                        <td>{{podanie.infoRaidDoswiadczenie}}</td>
+                    </tr>
+                    <tr>
+                        <td>Wiedza o postaci:</td>
+                        <td>{{podanie.infoRaidWiedza}}</td>
+                    </tr>
+                    <tr>
+                        <td>Dni raidowe:</td>
+                        <td>{{podanie.infoRaidDni}}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <td>Historia gildii:</td>
+                        <td>{{podanie.infoGildie}}</td>
+                    </tr>
+                    <tr>
+                        <td>Info ogólne:</td>
+                        <td>{{podanie.infoOgolne}}</td>
+                    </tr>
+                    <tr>
+                        <td>Płeć:</td>
+                        <td>{{podanie.plec}}</td>
+                    </tr>
+                    <tr>
+                        <td>battleTag:</td>
+                        <td>{{podanie.battleTag}}</td>
+                    </tr>
+                    <tr>
+                        <td>e-mail:</td>
+                        <td>{{podanie.email}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <a class="btn btn-success" href="#" role="button">Akceptuj Podanie</a>
+            <a class="btn btn-danger" href="#" role="button">Odrzuć podanie</a>
+            <hr/>
+            {% if komentarze %}
+            {% for i in komentarze %}
+            <div class="card shadow p-3 mb-5 bg-white rounded">
+                <div class="card-header">
+                Autor: <strong>{{i.author}}</strong> | {{i.date}}
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{i.comment}}</p>
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+            <p class='text-right'>
+            <a class="btn btn-secondary" href="#" role="button">Dodaj komentarz</a>
+            </p>            
+        </div>
+    </div>
+{% endblock %}
+     

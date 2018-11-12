@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h3 class="mb-0">
+            <p class="text-center">
+              <h3 class="text-dark text-center">Wypełnij podanie:</h3>
+            </p>
+            </h3>
+
+            <br/>
+            <form action="" method="POST" class='bootstrap4'>
+                {% csrf_token %}
+                {{ form|crispy }}
+                <input class="btn btn-secondary" type="submit" value="Wyślij">
+            </form>
+
+          </div>
+        </div>
+
+
+{% endblock %}

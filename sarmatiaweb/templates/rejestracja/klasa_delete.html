@@ -7,12 +7,14 @@
           <h3 class="mb-0">
           <p class="text-center">
             <h3 class="text-dark text-center">
+                <div class="alert alert-danger" role="alert">
                 Czy jesteś pewien, że chcesz usunąć klasę <strong>"{{ klasa.name }}"</strong>?
+                </div>
           </p>
           </h3>
 
           <br/>
-          <a class="btn btn-secondary" href="{% url 'rekrutacja_lista' %}" role="button">Anuluj</a>
+          <a class="btn btn-secondary" href="{% url 'panel_moda' %}" role="button">Anuluj</a>
           <form action="" method="POST">
                 {% csrf_token %}
                 {{ form.as_p }}

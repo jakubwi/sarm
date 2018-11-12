@@ -3,13 +3,14 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from pages.models import Rekrutacja, Klasa
+from rejestracja.models import Podanie
 from pages.forms import RekrutacjaForm, TworzenieKlasyForm, RekrutacjaNowaForm
-from itertools import chain
 
 
 def HomePageView(request):
     class_list = Klasa.objects.order_by('name')
-    context_dict = {'class_list': class_list,}
+
+    context_dict = {'class_list': class_list, }
     response = render(request, 'home.html', context=context_dict)
     return response
 
@@ -24,7 +25,7 @@ class RekrutacjaUpdateView(UpdateView):
     success_url = reverse_lazy('rekrutacja_lista')
 
 class KlasaCreateView(CreateView):
-    template_name = 'klasa_create.html'
+    template_name = 'rejestracja/klasa_create.html'
     model = Klasa
     form_class = TworzenieKlasyForm
     
@@ -39,9 +40,10 @@ class RekrutacjaCreateView(CreateView):
 
 class KlasaListView(ListView):
     model = Klasa
-    template_name = 'klasa_lista.html'
+    template_name = 'rejestracja/klasa_lista.html'
 
 class KlasaDeleteView(DeleteView):
-    template_name = 'klasa_delete.html'
+    template_name = 'rejestracja/klasa_delete.html'
     model = Klasa
-    success_url = reverse_lazy('rekrutacja_lista')
+    success_url = reverse_lazy('panel_moda')
+

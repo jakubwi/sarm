@@ -1,7 +1,7 @@
 from django.db import models
 
 class Klasa(models.Model):
-    name = models.CharField(max_length=50, unique=True, help_text="Tworząc nową klasę, zaznacz role w polu 'rekrutacja'.")
+    name = models.CharField(max_length=50, unique=True, default='', help_text="Tworząc nową klasę, zaznacz role w polu 'rekrutacja'.", null=True, blank=True)
     icon = models.ImageField(upload_to='class_icons', blank=True)
     tank = models.BooleanField(default=False)
     heal = models.BooleanField(default=False)
