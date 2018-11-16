@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.validators import RegexValidator
 from django.contrib.auth import get_user_model
 from datetime import datetime
 from django.contrib.auth.models import User
@@ -57,7 +58,7 @@ class Podanie(models.Model):
         max_length=2,
         choices=plec_choices, null=True, blank=True,
     )
-    battleTag = models.CharField(max_length=20)
+    battleTag = models.CharField(max_length=20, validators=[RegexValidator(regex='[A-Za-z0-9]+#[0-9]{4,}$', message='Sprawdź poprawność battleTaga', code='Niepoprawny battleTag'),])
     email = models.EmailField(max_length=125)
     emailConfirm = models.EmailField(max_length=125)
     date = models.DateTimeField(default=datetime.now, blank=True)
@@ -72,8 +73,8 @@ class Podanie(models.Model):
         return self.name
 
 class PodanieKomentarze(models.Model):
-    podanie = models.ForeignKey(Podanie, on_delete=models.CASCADE)
-    author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    podanie = models.ForeignKey(Podanie, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(get_sentinel_user), default='')
     comment = models.TextField(max_length=1024)
     date = models.DateTimeField(default=datetime.now, blank=True)
 

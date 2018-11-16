@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            {% if messages %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="alert alert-danger" role="alert">
+                <p class="{{ message.tags }}">{{ message }}</p>
+                </div>
+                {% else %}
+                <div class="alert alert-info" role="alert">
+                <p class="{{ message.tags }}">{{ message }}</p>
+                </div>
+                {% endif %}
+            {% endfor %}
+            {% endif %}
+
+            {% if podanie.infoRaidDoswiadczenie == '' and podanie.infoRaidWiedza == '' and podanie.infoRaidDni == '' %}
+            <h3 class="text-dark text-center">Aplikacja Socjalna: <strong>{{podanie.name}}</strong></h3>
+            {% else %}
+            <h3 class="text-dark text-center">Aplikacja Raidowa: <strong>{{podanie.name}}</strong></h3>
+            {% endif %}
+            <br/>
+            <table class="table table-striped table-sm">
+                <tbody>
+                    <tr>
+                        <td>Data złożenia podania:</td>
+                        <td>{{podanie.date}}</td>
+                    </tr>
+                    <tr>
+                        <td>Serwer:</td>
+                        <td>{{podanie.serwer}}</td>
+                    </tr>
+                    <tr>
+                        <td>Rasa:</td>
+                        <td>{% if podanie.rasa == None %}
+                                Usunięta
+                            {% else %}
+                                {{podanie.rasa}}
+                            {% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td>Klasa:</td>
+                        <td>{% if podanie.klasa == None %}
+                                Usunięta
+                            {% else %}
+                                {{podanie.klasa}}
+                            {% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td>Main Spec:</td>
+                        <td>{% if podanie.mainspec == None %}
+                                Usunięty
+                            {% else %}
+                                {{podanie.mainspec}}
+                            {% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td>Off Spec:</td>
+                        <td>{% if podanie.offspec == None %}
+                                Usunięty
+                            {% else %}
+                                {{podanie.offspec}}
+                            {% endif %}</td>
+                    </tr>
+                    {% if podanie.infoRaidDoswiadczenie != '' and podanie.infoRaidWiedza != '' and podanie.infoRaidDni != '' %}
+                    <tr>
+                        <td>Doświadczenie raidowe:</td>
+                        <td>{{podanie.infoRaidDoswiadczenie}}</td>
+                    </tr>
+                    <tr>
+                        <td>Wiedza o postaci:</td>
+                        <td>{{podanie.infoRaidWiedza}}</td>
+                    </tr>
+                    <tr>
+                        <td>Dni raidowe:</td>
+                        <td>{{podanie.infoRaidDni}}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <td>Historia gildii:</td>
+                        <td>{{podanie.infoGildie}}</td>
+                    </tr>
+                    <tr>
+                        <td>Info ogólne:</td>
+                        <td>{{podanie.infoOgolne}}</td>
+                    </tr>
+                    <tr>
+                        <td>Płeć:</td>
+                        <td>{{podanie.plec}}</td>
+                    </tr>
+                    <tr>
+                        <td>battleTag:</td>
+                        <td>{{podanie.battleTag}}</td>
+                    </tr>
+                    <tr>
+                        <td>e-mail:</td>
+                        <td>{{podanie.email}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            {% if not podanie.accepted and not podanie.rejected %}
+            <a class="btn btn-success" href="{% url 'aplikacja_confirm' podanie.pk %}" role="button">Akceptuj Podanie</a>
+            <a class="btn btn-danger" href="#" role="button">Odrzuć podanie</a>
+            {% endif %}
+            <hr/>
+            <div class="card shadow p-3 mb-5 bg-white rounded">
+                <h3 class="text-dark">Dodaj komentarz:</h3>
+                <form action="" method="POST" class='bootstrap4'>
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <p class='text-right'><input class="btn btn-secondary" type="submit" value="Dodaj"></p>
+                </form>
+                </div>
+            <hr/>
+            {% if comment_list %}
+            {% for i in comment_list %}
+            <div class="card shadow p-3 mb-5 bg-white rounded">
+                <div class="card-header" id='komenty'>
+                Autor: <strong>{{i.author}}</strong> | {{i.date}} 
+                {% if i.author == request.user %}
+                | <a href="{% url 'aplikacja_delete_komentarz' podanie.pk i.pk%}"><span class="badge badge-danger">Delete</span></a>
+                {% endif %}
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{i.comment}}</p>
+                </div>
+                
+            </div>
+            {% endfor %}
+            {% endif %}            
+        </div>
+    </div>
+<br/>
+{% endblock %}
+     

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
-
+{% load crispy_forms_tags %}
 
 {% block content %}
         <div class="card shadow-sm">
@@ -14,7 +14,7 @@
             <br/>
             <form action="" method="POST">
                 {% csrf_token %}
-                {{ form.as_p }}
+                {{ form|crispy }}
                 <input class="btn btn-secondary" type="submit" value="Akceptuj">
             </form>
 

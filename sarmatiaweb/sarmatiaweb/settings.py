@@ -22,7 +22,7 @@ MEDIA_DIR = os.path.join(BASE_DIR, 'media')
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'v+wll_90npt3yh6gg69l2_yknzj8r!qvvvcu*c=k%6x5)8o8=f'
+#SECRET_KEY = in local settings
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     #local
     'pages',
     'rejestracja',
+    'users',
     #3rd party
     'crispy_forms',
 ]
@@ -133,6 +134,15 @@ STATICFILES_DIRS = [STATIC_DIR, ]
 
 MEDIA_ROOT = MEDIA_DIR
 MEDIA_URL = '/media/'
+
+# User custom model
+
+AUTH_USER_MODEL = 'users.CustomUser'
+
+# Login/logout
+
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
 
 # Django Crispy Forms template theme
 

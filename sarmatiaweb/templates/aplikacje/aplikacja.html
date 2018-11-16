@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+
+{% block content %}
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h3 class="text-dark text-center">Złóż aplikację:</h3>
+            <br/>
+            <h5 class='text-center'>Przed złożeniem wniosku o członkowstwo w gildii zapoznaj się z naszym regulaminem.</h5>
+            <p>Na początek musisz zdecydować się czy składasz aplikację socjalną lub rajdową.   
+                Aplikację socjalną powinny złożyć osoby, które nie są zainteresowane rajdowaniem lub nie są zainteresowane nim aktualnie 
+                (np nie posiadasz postaci na maksymalnym levelu, bądź nie posiada odpowiedniego ekwipunku do rajdowania). 
+                Pamiętaj, że osoby które złożą aplikację socjalną mogą rajdować w naszej gildii 
+                (jeśli będą posiadać odpowiedni ekwipunek i umiejętności wymagane, aby uczestniczyć w rajdach) 
+                ale muszą liczyć się z tym, że od momentu kiedy zgłoszą chęć rajdowania może minąć trochę czasu do momentu kiedy zwolni się spot dla waszej klasy! 
+            <br/>
+            </p><p>   
+                UWAGA: Przyjmujemy aplikacje socjalne nawet od klas dla których rekrutacja jest zamknięta (lista na stronie głównej).
+                Aplikacja rajdowa zapewnia możliwość rajdowania praktycznie od samego początku. Wymagamy jednak by osoby składające podanie rajdowe posiadały: postać na maksymalnym levelu, ekwipunek umożliwiający rajdowanie w najnowszej instancji rajdowej oraz przynajmniej średnie umiejętności grania swoją klasą. Dodatkowo, aby uzyskać dostęp do grupy rajdującej heroiczne rajdy kandydat musi poczekać na wolne miejsce i zapracować na nie uczestnicząc w prostszych rajdach. UWAGA: Z reguły podanie rajdowe powinny wypełniać klasy z specjalizacjami, dla których rekrutacja jest otwarta (lista na stronie głównej), jednak w szczególnych przypadkach jesteśmy w stanie odstąpić od tej zasady.                    
+            </p>
+            <p>
+                W razie jakiś pytań proszę skontaktować się z oficerami - lista na podstronie O Nas.    
+            </p>
+            <h5 class='text-dark text-center'><strong>Chcę złożyć aplikację: </strong><br/><br/>
+            <a class="btn btn-danger" href="{% url 'aplikacja_raid' %}" role="button">Raidową</a>
+            <a class="btn btn-success" href="{% url 'aplikacja_social' %}" role="button">Socjalną</a>
+        </h5>
+        </div>
+    </div>
+{% endblock %}
+     

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h3 class="mb-0">
+      <h3 class="text-dark text-center">Wybierz użytkownika, któremu chcesz odebrać uprawnienia moderatora</h3>
+      <br/>
+
+            <br/>
+            {% for object in object_list %}
+            {% if object.is_staff %}
+            <a class="text-secondary" href="{% url 'mod_change' object.pk %}">{{ object.username }}</a><br/>
+            {% endif %}
+            {% endfor %}
+            <br/>
+            <a class="btn btn-secondary" href="{% url 'panel_moda' %}" role="button">Powrót</a>
+          </div>
+        </div>
+
+
+{% endblock %}
+     

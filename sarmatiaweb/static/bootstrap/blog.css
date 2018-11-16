@@ -1,5 +1,9 @@
 /* stylelint-disable selector-list-comma-newline-after */
 
+.clickable-row {
+  cursor: pointer;
+  }
+
 body {
   background-image: url(/static/img/background.jpg);
   background-size: cover;

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <p class="text-center">
+        <h3 class="text-dark text-center">Profil: <strong>{{ user.username }}</strong></h3>
+        </p>
+        <br/>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-dark"><b>Dodaj postać</b></h5>
+                <p class='text-dark'>Pamiętaj, możesz dodać jedynie postacie na maksymalnym levelu które znajdują się w gildii.<br/>
+                    Wybierz właściwe specki, nie będziesz mógł ich potem edytować.
+                </p>
+                <hr/>
+                    <table class="table table-borderless table-sm">
+                            <thead>
+                              <tr>
+                                <th scope="col">Nazwa</th>
+                                <th scope="col">Serwer</th>
+                                <th scope="col">Klasa</th>
+                                <th scope="col">Mainspec</th>
+                                <th scope="col">Offspec</th>
+                                <th scope="col">Rasa</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                                <form action="" method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                            <div class="form-group">
+                                <tr>
+                                <td>{{ form.name|as_crispy_field }}</td>
+                                <td>{{ form.serwer|as_crispy_field }}</td>
+                                <td>{{ form.klasa|as_crispy_field }}</td>
+                                <td>{{ form.mainspec|as_crispy_field }}</td>
+                                <td>{{ form.offspec|as_crispy_field }}</td>
+                                <td>{{ form.rasa|as_crispy_field }}</td>
+                                </tr>
+                            </div>
+      
+                            </tbody>
+                          </table>
+                          <button class="btn btn-secondary btn-sm" type="submit">Dodaj</a>
+                        </form>
+            </div>
+        </div>
+               
+    </div>
+</div>
+<br/>
+{% endblock %}

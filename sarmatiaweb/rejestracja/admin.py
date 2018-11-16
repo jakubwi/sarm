@@ -2,6 +2,7 @@ from django.contrib import admin
 from rejestracja.models import Serwer, Rasa, Rola, Podanie, PodanieKomentarze
 
 
+
 class SerwerAdmin(admin.ModelAdmin):
     list_display = ('name',)
 

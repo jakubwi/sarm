@@ -100,8 +100,10 @@
             <p class='text-center'>Rekrutacja zamknięta.</p>
             {% endif %}
             <p class="text-right">
+            {% if request.user.is_staff %}
             <a class="btn btn-danger" href="{% url 'rekrutacja_lista' %}" role="button">Edytuj</a>
             </p>
+            {% endif %}
             <p class="text-center">
             <a class="btn btn-success" href="{% url 'aplikacja' %}" role="button">Złóż podanie</a>
             </p>
@@ -110,7 +112,7 @@
         </div>
       </div>
     </div>
-
+<br/>
   </div>
 
   <main role="main" class="container">

@@ -9,7 +9,7 @@
             <h3 class="text-dark text-center">Nowe aplikacje:</h3>
             <ul class="list-group">
             {% for object in lista %}
-            <a href="{% url 'podanie_detail' object.pk %}" class="list-group-item list-group-item-action list-group-item-info">
+            <a href="{% url 'aplikacja_detail' object.pk %}" class="list-group-item list-group-item-action list-group-item-info">
                 <span class="text-center text-dark"><strong>{{ object.name }}</strong><br/>
                 <span class="text-right">{{object.date}}</span>
             </a>
@@ -18,10 +18,18 @@
             {% else %}
             <h4 class="text-dark text-center">Brak nowych aplikacji</h4>
             {% endif %}
+
+            <br/>
+            <h3 class="text-dark text-left">Przeglądaj aplikacje:</h3>
+            <ul class="list-group">
+                <a href="{% url 'aplikacje_accepted' %}" class="list-group-item list-group-item-action list-group-item-info">Zaakceptowane</a>                        
+                <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Odrzucone</a>
+            </ul>
             <br/>
             <h3 class="text-dark text-left">Dostępne akcje:</h3>
 
-            <ul class="list-group">                        
+            <ul class="list-group">
+                <a href="{% url 'mod_wybierz' %}" class="list-group-item list-group-item-action list-group-item-success">Nadaj uprawnienia</a>                        
                 <a href="{% url 'rasa_create' %}" class="list-group-item list-group-item-action list-group-item-success">Dodaj nową rasę</a>
                 <a href="{% url 'klasa_create' %}" class="list-group-item list-group-item-action list-group-item-success">Dodaj nową klasę</a>
                 <a href="{% url 'rola_create' %}" class="list-group-item list-group-item-action list-group-item-success">Dodaj nową rolę</a>
@@ -29,6 +37,7 @@
             </ul>
             <br/>
             <ul class="list-group">
+                <a href="{% url 'mod_lista' %}" class="list-group-item list-group-item-action list-group-item-danger">Odbierz uprawnienia</a> 
                 <a href="{% url 'rasa_lista' %}" class="list-group-item list-group-item-action list-group-item-danger">Usuń rasę</a>                        
                 <a href="{% url 'klasa_lista' %}" class="list-group-item list-group-item-action list-group-item-danger">Usuń klasę</a>
                 <a href="{% url 'rola_lista' %}" class="list-group-item list-group-item-action list-group-item-danger">Usuń rolę</a>

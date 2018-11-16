@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h3 class="text-dark text-center">Akceptacja podania - krok 2</h3>
+        <br/>
+        <h4 class="text-dark text-center"><div class="p-3 mb-2 bg-info text-white"> {{ podanie.name }} | {{ podanie.serwer }} </div></h4>
+        <br/>
+        <p>Upewnij się, że battleTag użytkownika jest poprawny. BattleTag wpisany w podaniu: {{podanie.battleTag}}. <br/>
+        <strong>Przejście dalej utworzy profil dla użytkownika {{username}}</strong></p>
+            {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+            Błąd.
+            </div>
+            {% endif %}
+        <form action="" method="POST" class='bootstrap4'>
+            {% csrf_token %}
+            {{ form|crispy }}
+            <p class='text-right'><input class="btn btn-secondary" type="submit" value="Dalej"></p>
+        </form>
+
+    </div>
+</div>
+
+
+{% endblock %}
