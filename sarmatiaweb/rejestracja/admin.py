@@ -14,25 +14,21 @@ class RolaAdmin(admin.ModelAdmin):
 
 class PodanieRaidAdmin(admin.ModelAdmin):
     list_display = ['name',
+                'accepted',
+                'rejected',
                 'date',
                 'serwer',
                 'rasa', 
                 'klasa',
                 'mainspec',
                 'offspec',
-                'infoRaidDoswiadczenie',
-                'infoRaidWiedza',
-                'infoRaidDni',
-                'infoGildie',
-                'infoOgolne',
-                'plec',
                 'battleTag',
                 'email',
                 'emailConfirm',
         ]
 
 class PodanieKomentarzeAdmin(admin.ModelAdmin):
-    list_display = ['podanie', 'author', 'comment', 'date']
+    list_display = ['podanie', 'author', 'date']
 
 admin.site.register(Serwer, SerwerAdmin)
 admin.site.register(Rasa, RasaAdmin)

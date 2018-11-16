@@ -17,6 +17,7 @@ class Serwer(models.Model):
 
     class Meta:
         verbose_name_plural = 'Serwery'
+        ordering = ('name',)
     
     def __str__(self):
         return self.name
@@ -26,6 +27,7 @@ class Rasa(models.Model):
     
     class Meta:
         verbose_name_plural = 'Rasy'
+        ordering = ('name',)
     
     def __str__(self):
         return self.name
@@ -34,6 +36,7 @@ class Rola(models.Model):
     name = models.CharField(max_length=50, null=True, blank=True)
     class Meta:
         verbose_name_plural = 'Role'
+        ordering = ('name',)
     
     def __str__(self):
         return self.name
@@ -67,7 +70,7 @@ class Podanie(models.Model):
 
     class Meta:
         verbose_name_plural = 'Podania'
-        ordering = ('name',)
+        ordering = ('date',)
 
     def __str__(self):
         return self.name

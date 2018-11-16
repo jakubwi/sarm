@@ -17,7 +17,7 @@ from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from rejestracja.models import Serwer, Rasa, Rola, Podanie, PodanieKomentarze
 from rejestracja.forms import PodanieRaidForm, PodanieSocialForm, PodanieKomentarzeForm, SerwerForm, RolaForm, RasaForm
 from users.models import CustomUser, UserProfile
-from users.forms import CustomUserCreationForm, UserProfileForm, UserPostacForm, AplikacjaDoneForm 
+from users.forms import CustomUserCreationForm, UserProfileForm, UserPostacForm, AplikacjaDoneForm
 ## login required / is_staff /admin
 from django.contrib.auth.mixins import LoginRequiredMixin, AccessMixin
 from django.contrib.auth.decorators import login_required
@@ -140,7 +140,7 @@ class ModListView(LogoutIfNotStaffMixin, ListView):
 ### panel moda
 @staff_member_required
 def PanelModaView(request):
-    lista_podan = Podanie.objects.order_by('date')
+    lista_podan = Podanie.objects.all()
     list_podan_bez_decyzji = []
     for i in lista_podan:
         if not i.accepted and not i.rejected:
@@ -153,11 +153,13 @@ def PanelModaView(request):
 
 ## zaakceptowane i odrzucone podania
 @staff_member_required
-def PodaniaZaakceptowane(request):
-    lista_podan = Podanie.objects.order_by('date')
-    podania_accepted = [i for i in lista_podan if i.accepted]
-    
-    return render(request, 'aplikacje/aplikacje_accepted.html', context={'podania_accepted': podania_accepted})
+def AplikacjeZamkniete(request):
+    podania = Podanie.objects.order_by('-date')
+    lista_podan = [i for i in podania if i.accepted or i.rejected]
+
+    context_dict = {'lista_podan': lista_podan}
+
+    return render(request, 'aplikacje/aplikacje_closed.html', context=context_dict)
 
 ## podanie
 @staff_member_required
@@ -207,7 +209,7 @@ def AplikacjaDeleteKomentarz(request, pk, kpk):
     
     return render(request, 'aplikacje/aplikacja_delete_komentarz.html', context)
 
-### dodawanie po akceptacji podania
+### AKCEPTACJA PODANIA
 @staff_member_required
 def AplikacjaConfirm(request, pk):
     podanie = Podanie.objects.get(pk=pk)
@@ -313,3 +315,24 @@ class AplikacjaConfirm4(LogoutIfNotStaffMixin, TemplateView):
     login_url = 'login'
     template_name = 'aplikacje/aplikacja_confirm4.html'
 
+## ODRZUCENIE PODANIA
+
+@staff_member_required
+def AplikacjaReject(request, pk):
+    podanie = Podanie.objects.get(pk=pk)
+    podanie_email = podanie.email
+
+    if request.method == 'POST':
+        send_mail('Sarmatia - Aplikacja Odrzucona', 
+                    'Przykro nam, Twoje podanie do gildii zostało odrzucone.', 
+                    settings.DEFAULT_FROM_EMAIL, 
+                    [podanie_email], 
+                    fail_silently=False, )
+        podanie.rejected = True
+        podanie.save()
+        return redirect('aplikacje_zamkniete')
+
+    context_dict = {'podanie': podanie,
+                        'podanie_email': podanie_email,}
+    response = render(request, 'aplikacje/aplikacja_reject.html', context=context_dict)
+    return response

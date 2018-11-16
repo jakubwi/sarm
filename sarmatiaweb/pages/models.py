@@ -1,4 +1,16 @@
 from django.db import models
+from datetime import datetime
+
+class Killshot(models.Model):
+    boss = models.CharField(max_length=50, unique=True, default='', null=True, blank=True)
+    image = models.ImageField(upload_to='killshots', blank=True)
+    date = models.DateTimeField(default=datetime.now, blank=True)
+    
+    class Meta:
+        ordering = ('date',)
+    
+    def __str__(self):
+        return self.boss
 
 class Klasa(models.Model):
     name = models.CharField(max_length=50, unique=True, default='', help_text="Tworząc nową klasę, zaznacz role w polu 'rekrutacja'.", null=True, blank=True)
@@ -14,7 +26,7 @@ class Klasa(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 class Rekrutacja(models.Model):
     klasa = models.OneToOneField(Klasa, on_delete=models.CASCADE)
     tank = models.BooleanField(default=False)

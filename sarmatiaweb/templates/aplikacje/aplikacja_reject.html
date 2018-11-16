@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h3 class="text-dark text-center">Odrzucenie podania</h3>
+        <br/>
+        <h4 class="text-dark text-center"><div class="p-3 mb-2 bg-secondary text-white"> {{ podanie.name }} | {{ podanie.serwer }} </div></h4>
+        <br/>
+           
+        <form action="" method="POST" class='bootstrap4'>
+            {% csrf_token %}
+            <h4 class="text-dark text-center">
+                <div class="p-3 mb-2 bg-danger text-white">
+                    Odrzucenie podania spowoduje wysyłkę maila z informacją o odrzuceniu i oznaczy podanie jako odrzucone.
+                </div>
+            </h4>
+            <p class='text-right'><input class="btn btn-danger" type="submit" value="Odrzuć"></p>
+        </form>
+
+    </div>
+</div>
+
+
+{% endblock %}

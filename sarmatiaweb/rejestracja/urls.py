@@ -21,8 +21,9 @@ urlpatterns = [
     path('mod/podanie/<int:pk>/akceptacja/<username>', views.AplikacjaConfirm2, name='aplikacja_confirm2'),
     path('mod/podanie/<int:pk>/akceptacja/<username>/profil', views.AplikacjaConfirm3, name='aplikacja_confirm3'),
     path('mod/podanie/koniec', views.AplikacjaConfirm4.as_view(), name='aplikacja_confirm4'),
+    path('mode/podanie/<int:pk>/odrzuc', views.AplikacjaReject, name='aplikacja_reject'),
     path('moderatorzy/wybierz', views.ModWybierzView.as_view(), name='mod_wybierz'),
     path('moderatorzy/<int:pk>/zmien', views.ModChangeView.as_view(), name='mod_change'),
     path('moderatorzy/lista', views.ModListView.as_view(), name='mod_lista'),
-    path('mod/podanie/zakceptowane', views.PodaniaZaakceptowane, name='aplikacje_accepted'),
+    path('mod/podanie/zamkniete', views.AplikacjeZamkniete, name='aplikacje_zamkniete'),
     ]

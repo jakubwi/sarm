@@ -66,10 +66,10 @@ def ProfilView(request):
     userprofile = UserProfile.objects.get_or_create(user=user) [0]
     form = UserProfileUserForm()
     ilosc_postaci = len(postacie)
-    main_list = UserPostac.objects.filter(is_main=True)
     main = None
-    for postac in main_list:
-        main = postac
+    for postac in postacie:
+        if postac.is_main:
+            main = postac
 
     if request.method == 'POST':
         form = UserProfileUserForm(request.POST, request.FILES, instance=userprofile)

@@ -101,7 +101,6 @@ class AplikacjaDoneForm(forms.Form):
         self.fields['email'].required = False
         self.fields['email'].widget = HiddenInput()
 
-
 ### user tworzy haslo po kliknieciu w link w mailu
 
 class SetPasswordForm(forms.Form):

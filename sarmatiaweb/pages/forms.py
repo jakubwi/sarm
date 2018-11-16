@@ -1,5 +1,11 @@
 from django.forms import ModelForm, forms
-from pages.models import Rekrutacja, Klasa
+from pages.models import Rekrutacja, Klasa, Killshot
+
+class KillshotCreateForm(ModelForm):
+    class Meta:
+        model = Killshot
+        fields = ['image', 'boss', ]
+        labels = {'image': 'Dodaj screenshot (rozdzielczość 1920x1080', 'boss': 'Wpisz nazwę bossa'}
 
 class RekrutacjaForm(ModelForm):
     class Meta:

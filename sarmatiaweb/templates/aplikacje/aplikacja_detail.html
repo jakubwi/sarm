@@ -21,11 +21,17 @@
             {% endif %}
 
             {% if podanie.infoRaidDoswiadczenie == '' and podanie.infoRaidWiedza == '' and podanie.infoRaidDni == '' %}
-            <h3 class="text-dark text-center">Aplikacja Socjalna: <strong>{{podanie.name}}</strong></h3>
+            <h3 class="text-dark text-center">Aplikacja Socjalna: <strong>{{podanie.name}}</strong><br/>
             {% else %}
-            <h3 class="text-dark text-center">Aplikacja Raidowa: <strong>{{podanie.name}}</strong></h3>
+            <h3 class="text-dark text-center">Aplikacja Raidowa: <strong>{{podanie.name}}</strong><br/>
             {% endif %}
+                <a class="btn btn-warning btn-sm" href="https://worldofwarcraft.com/en-gb/character/{{podanie.serwer}}/{{podanie.name}}" role="button"><b>ARMORY</b></a>
+                <a class="btn btn-success btn-sm" href="https://www.wowprogress.com/character/eu/{{podanie.serwer}}/{{podanie.name}}" role="button"><b>WoW Progress</b></a>
+                <a class="btn btn-primary btn-sm" href="https://raider.io/characters/eu/{{podanie.serwer}}/{{podanie.name}}" role="button"><b>Raider.io</b></a>
+            </h3>
+            
             <br/>
+            
             <table class="table table-striped table-sm">
                 <tbody>
                     <tr>
@@ -106,7 +112,7 @@
             </table>
             {% if not podanie.accepted and not podanie.rejected %}
             <a class="btn btn-success" href="{% url 'aplikacja_confirm' podanie.pk %}" role="button">Akceptuj Podanie</a>
-            <a class="btn btn-danger" href="#" role="button">Odrzuć podanie</a>
+            <a class="btn btn-danger" href="{% url 'aplikacja_reject' podanie.pk %}" role="button">Odrzuć podanie</a>
             {% endif %}
             <hr/>
             <div class="card shadow p-3 mb-5 bg-white rounded">

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h3 class="mb-0">
+      <h3 class="text-dark text-center">Wybierz 'killshot' który chcesz usunąć</h3>
+      <br/>
+            <br/>
+            {% for object in object_list %}
+            <a class="text-secondary" href="{% url 'killshot_delete' object.pk %}">{{ object.boss }}</a><br/>
+            {% endfor %}
+            <br/>
+            <a class="btn btn-secondary" href="{% url 'panel_moda' %}" role="button">Powrót</a>
+          </div>
+        </div>
+
+
+{% endblock %}
