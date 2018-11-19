@@ -4,7 +4,7 @@ from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from pages.models import Rekrutacja, Klasa, Killshot
 from rejestracja.models import Podanie
-from pages.forms import RekrutacjaForm, TworzenieKlasyForm, RekrutacjaNowaForm, KillshotCreateForm
+from pages.forms import TworzenieKlasyForm, RekrutacjaNowaForm, KillshotCreateForm, RekrutacjaForm, RekrutacjaFormSet
 ## login required / is_staff /admin
 from django.contrib.auth.mixins import LoginRequiredMixin, AccessMixin
 from django.contrib.auth.decorators import login_required
@@ -18,13 +18,17 @@ class LogoutIfNotStaffMixin(AccessMixin):
             return self.handle_no_permission()
         return super(LogoutIfNotStaffMixin, self).dispatch(request, *args, **kwargs)
 
-def HomePageView(request):
-    class_list = Klasa.objects.order_by('name')
-    killshots_list = Killshot.objects.order_by('date')
-    first_shot = killshots_list[0]
-    context_dict = {'class_list': class_list, 'killshots_list': killshots_list, 'first_shot': first_shot }
-    response = render(request, 'home.html', context=context_dict)
-    return response
+
+class HomePageView(ListView):
+    context_object_name = 'class_list'    
+    template_name = 'home.html'
+    queryset = Klasa.objects.order_by('name')
+
+    def get_context_data(self, **kwargs):
+        context = super(HomePageView, self).get_context_data(**kwargs)
+        context['killshots_list'] = Killshot.objects.order_by('date')
+        context['first_shot'] = Killshot.objects.all().first()
+        return context
 
 ### dodaj/usun killshot
 @method_decorator(staff_member_required, name='dispatch')
@@ -49,19 +53,27 @@ class KillshotDeleteView(LogoutIfNotStaffMixin, DeleteView):
     success_url = reverse_lazy('panel_moda')
 
 ## REKRUTACJA    
-@method_decorator(staff_member_required, name='dispatch')
-class RekrutacjaListView(LogoutIfNotStaffMixin, ListView):
-    login_url = 'login'
-    template_name = 'rekrutacja_lista.html'
-    model = Rekrutacja
-
-@method_decorator(staff_member_required, name='dispatch')
-class RekrutacjaUpdateView(LogoutIfNotStaffMixin, UpdateView):
-    login_url = 'login'
-    model = Rekrutacja
-    template_name = 'rekrutacja_update.html'
-    form_class = RekrutacjaForm
-    success_url = reverse_lazy('rekrutacja_lista')
+@staff_member_required
+def RekrutacjaUpdateView(request):
+    rekrutacja_list = Rekrutacja.objects.all()
+    klasa = Klasa
+    ilosc_klas = len(Klasa.objects.all())
+    
+    if request.method == 'POST':
+        formset = RekrutacjaFormSet(request.POST)
+        if formset.is_valid():
+            formset.save()
+            return redirect('home')
+        else:
+            print(formset.errors)
+    else:
+        formset = RekrutacjaFormSet()
+    context_dict = {'formset': formset,
+                    'rekrutacja_list': rekrutacja_list,
+                    'ilosc_klas': ilosc_klas,
+                    'klasa': klasa,}
+    response = render(request, 'rekrutacja_update.html', context=context_dict)
+    return response
 
 @method_decorator(staff_member_required, name='dispatch')
 class KlasaCreateView(LogoutIfNotStaffMixin, CreateView):

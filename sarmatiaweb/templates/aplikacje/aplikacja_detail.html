@@ -124,11 +124,15 @@
                 </form>
                 </div>
             <hr/>
-            {% if comment_list %}
+
             {% for i in comment_list %}
             <div class="card shadow p-3 mb-5 bg-white rounded">
                 <div class="card-header" id='komenty'>
-                Autor: <strong>{{i.author}}</strong> | {{i.date}} 
+                {% for user in authors %}
+                    {% if user.user == i.author %}
+                    <img class="rounded float-left" src="{{ MEDIA_URL }}{{ user.picture }}" width="50" alt="{{ i.author }}" />| Autor: <strong>{{i.author}}</strong> | {{i.date}} 
+                    {% endif %}
+                {% endfor %}
                 {% if i.author == request.user %}
                 | <a href="{% url 'aplikacja_delete_komentarz' podanie.pk i.pk%}"><span class="badge badge-danger">Delete</span></a>
                 {% endif %}
@@ -138,8 +142,10 @@
                 </div>
                 
             </div>
+            {% empty %}
+            
             {% endfor %}
-            {% endif %}            
+         
         </div>
     </div>
 <br/>

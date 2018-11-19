@@ -94,7 +94,7 @@
             {% endif %}
             <p class="text-right">
             {% if request.user.is_staff %}
-            <a class="btn btn-danger" href="{% url 'rekrutacja_lista' %}" role="button">Edytuj</a>
+            <a class="btn btn-danger" href="{% url 'rekrutacja_update' %}" role="button">Edytuj</a>
             </p>
             {% endif %}
             {% if not user.is_authenticated %}

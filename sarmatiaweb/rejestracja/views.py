@@ -23,6 +23,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, AccessMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
+from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.contrib.auth.decorators import user_passes_test
 
 
 class LogoutIfNotStaffMixin(AccessMixin):
@@ -32,6 +34,20 @@ class LogoutIfNotStaffMixin(AccessMixin):
             return self.handle_no_permission()
         return super(LogoutIfNotStaffMixin, self).dispatch(request, *args, **kwargs)
 
+def superuser_required(view_func=None, redirect_field_name=REDIRECT_FIELD_NAME,
+                   login_url='account_login_url'):
+    """
+    Decorator for views that checks that the user is logged in and is a
+    superuser, redirecting to the login page if necessary.
+    """
+    actual_decorator = user_passes_test(
+        lambda u: u.is_active and u.is_superuser,
+        login_url=login_url,
+        redirect_field_name=redirect_field_name
+    )
+    if view_func:
+        return actual_decorator(view_func)
+    return actual_decorator
 
 ## SERWER
 @method_decorator(staff_member_required, name='dispatch')
@@ -116,13 +132,13 @@ class AplikacjaSocialView(CreateView):
     success_url = reverse_lazy('home')
 
 ## dodawanie moderatora / usuwanie moderatora
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(superuser_required(login_url='login'), name='dispatch', )
 class ModWybierzView(LogoutIfNotStaffMixin, ListView):
     login_url = 'login'
     model = CustomUser
     template_name = 'rejestracja/mod_wybierz.html'
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(superuser_required(login_url='login'), name='dispatch')
 class ModChangeView(LogoutIfNotStaffMixin, UpdateView):
     login_url = 'login'
     model = CustomUser
@@ -130,7 +146,7 @@ class ModChangeView(LogoutIfNotStaffMixin, UpdateView):
     success_url = reverse_lazy('panel_moda')
     fields = ['is_staff']
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(superuser_required(login_url='login'), name='dispatch')
 class ModListView(LogoutIfNotStaffMixin, ListView):
     login_url = 'login'
     model = CustomUser
@@ -164,9 +180,9 @@ def AplikacjeZamkniete(request):
 ## podanie
 @staff_member_required
 def AplikacjaDetailView(request, pk):
-
     podanie = Podanie.objects.get(pk=pk)
     comment_list = podanie.comments.filter(podanie=podanie)
+    authors = UserProfile.objects.all()
     new_comment = None
 
     if request.method == 'POST':
@@ -181,18 +197,14 @@ def AplikacjaDetailView(request, pk):
         else:
             print(form.errors)
             messages.error(request, 'Błąd. Komentarz nie został dodany.')
-        context_dict = {'podanie': podanie, 
-                        'comment_list': comment_list, 
-                        'new_comment': new_comment,
-                        'form': form}
-        response = render(request, 'aplikacje/aplikacja_detail.html', context=context_dict)
-        return response
+
     else:
         form = PodanieKomentarzeForm()
         context_dict = {'podanie': podanie, 
                         'comment_list': comment_list, 
                         'new_comment': new_comment,
-                        'form': form}
+                        'form': form,
+                        'authors': authors}
         response = render(request, 'aplikacje/aplikacja_detail.html', context=context_dict)
         return response
 

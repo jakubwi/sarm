@@ -25,11 +25,17 @@
                 <a href="{% url 'aplikacje_zamkniete' %}" class="list-group-item list-group-item-action list-group-item-info">Przeglądaj</a>                        
             </ul>
             <br/>
+            {% if user.is_superuser %}
+            <h3 class="text-dark text-left">Admin:</h3>
+            <ul class='list-group'>
+                <a href="{% url 'mod_wybierz' %}" class="list-group-item list-group-item-action list-group-item-success">Nadaj uprawnienia</a>
+                <a href="{% url 'mod_lista' %}" class="list-group-item list-group-item-action list-group-item-danger">Odbierz uprawnienia</a> 
+            </ul>
+            <br/>
+            {% endif %}
             <h3 class="text-dark text-left">Dostępne akcje:</h3>
-
             <ul class="list-group">
                 <a href="{% url 'killshot_create' %}" class="list-group-item list-group-item-action list-group-item-success">Dodaj killshot</a> 
-                <a href="{% url 'mod_wybierz' %}" class="list-group-item list-group-item-action list-group-item-success">Nadaj uprawnienia</a>                        
                 <a href="{% url 'rasa_create' %}" class="list-group-item list-group-item-action list-group-item-success">Dodaj nową rasę</a>
                 <a href="{% url 'klasa_create' %}" class="list-group-item list-group-item-action list-group-item-success">Dodaj nową klasę</a>
                 <a href="{% url 'rola_create' %}" class="list-group-item list-group-item-action list-group-item-success">Dodaj nową rolę</a>
@@ -37,8 +43,7 @@
             </ul>
             <br/>
             <ul class="list-group">
-                <a href="{% url 'killshot_lista' %}" class="list-group-item list-group-item-action list-group-item-danger">Usuń killshot</a> 
-                <a href="{% url 'mod_lista' %}" class="list-group-item list-group-item-action list-group-item-danger">Odbierz uprawnienia</a> 
+                <a href="{% url 'killshot_lista' %}" class="list-group-item list-group-item-action list-group-item-danger">Usuń killshot</a>
                 <a href="{% url 'rasa_lista' %}" class="list-group-item list-group-item-action list-group-item-danger">Usuń rasę</a>                        
                 <a href="{% url 'klasa_lista' %}" class="list-group-item list-group-item-action list-group-item-danger">Usuń klasę</a>
                 <a href="{% url 'rola_lista' %}" class="list-group-item list-group-item-action list-group-item-danger">Usuń rolę</a>

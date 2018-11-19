@@ -3,24 +3,42 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-        <div class="card shadow-sm">
-          <div class="card-body">
-            <h3 class="mb-0">
-            <p class="text-center">
-              <h3 class="text-dark text-center">{{ object.klasa }}</a>
-            </p>
-            </h3>
-
+<div class="card shadow-sm">
+  <div class="card-body">
+    <p class="text-center">
+    <h3 class="text-dark text-center">Rekrutacja</h3>
+    </p>
+    <br/>
+    
+    <form action="" method="POST">{% csrf_token %}
+    {{ formset.management_form }}
+    <div class="row">
+      {% for form in formset %}
+        <div class="col-md-2">
             <br/>
-            <form action="" method="POST">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <input class="btn btn-secondary" type="submit" value="Akceptuj">
-            </form>
+            <img src="{{ MEDIA_URL }}{{ form.instance.klasa.icon }}" class='rounded' height="25"/> |{{ form.instance.klasa }}<hr/>
+            <div class='float-left'>
+            {% for field in form.visible_fields %}
 
-          </div>
-        </div>
-
-
+            {{form.id}}
+            {% if field.label == '' %}
+            {{ field }}
+            {% endif %}
+            {{ field.label }}
+            {{ field }}<br/>
+            {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+            {% endfor %}
+ 
+        {% endfor %}
+      </div>
+      </div>
+      {% endfor %}
+    </div>
+    <br/>
+    <input class="btn btn-secondary" type="submit" value="Zapisz">
+    </form>
+  </div>
+</div>
 {% endblock %}
      
