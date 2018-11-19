@@ -25,6 +25,10 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import user_passes_test
+## django-filter
+from .filters import AplikacjeZamknieteFilter
+from django.db.models import Q
+
 
 
 class LogoutIfNotStaffMixin(AccessMixin):
@@ -170,10 +174,9 @@ def PanelModaView(request):
 ## zaakceptowane i odrzucone podania
 @staff_member_required
 def AplikacjeZamkniete(request):
-    podania = Podanie.objects.order_by('-date')
-    lista_podan = [i for i in podania if i.accepted or i.rejected]
 
-    context_dict = {'lista_podan': lista_podan}
+    f = AplikacjeZamknieteFilter(request.GET, queryset=Podanie.objects.filter(Q(accepted=True) | Q(rejected=True)))
+    context_dict = {'filter': f}
 
     return render(request, 'aplikacje/aplikacje_closed.html', context=context_dict)
 

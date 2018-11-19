@@ -45,6 +45,9 @@ INSTALLED_APPS = [
     'users',
     #3rd party
     'crispy_forms',
+    'django_filters',
+    'bootstrap_datepicker_plus',
+
 ]
 
 MIDDLEWARE = [
