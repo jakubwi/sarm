@@ -28,6 +28,7 @@ from django.contrib.auth.decorators import user_passes_test
 ## django-filter
 from .filters import AplikacjeZamknieteFilter
 from django.db.models import Q
+from django.db.models import Count
 
 
 
@@ -174,10 +175,11 @@ def PanelModaView(request):
 ## zaakceptowane i odrzucone podania
 @staff_member_required
 def AplikacjeZamkniete(request):
-
     f = AplikacjeZamknieteFilter(request.GET, queryset=Podanie.objects.filter(Q(accepted=True) | Q(rejected=True)))
-    context_dict = {'filter': f}
+    c = Podanie.objects.annotate(num_comm=Count('comments')).filter(num_comm__gte=1)
 
+    context_dict = {'filter': f, 'c':c}
+    
     return render(request, 'aplikacje/aplikacje_closed.html', context=context_dict)
 
 ## podanie

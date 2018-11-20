@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{% block extrahead %}
+{{ filter.form.media }}
+{% endblock %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 
@@ -18,9 +21,15 @@
                 {% if obj.rejected %}
                     <a href="{% url 'aplikacja_detail' obj.pk %}">
                 {% endif %}
-                <span class="text-center text-dark"><strong>{{ obj.name }} | APLIKACJA {% if obj.accepted %} ZAAKCEPTOWANA{% endif %}{% if obj.rejected %}ODRZUCONA{% endif %}</strong>
+                <span class="text-center text-dark">
+                    <strong>{{ obj.name }} | APLIKACJA {% if obj.accepted %} ZAAKCEPTOWANA{% endif %}{% if obj.rejected %}ODRZUCONA{% endif %}</strong>
                 {{obj.date}}
-                </a>
+                    {% for podanie in c %}
+                        {% if podanie == obj %}
+                        | Komentarze: <strong>{{ podanie.comments.count }}</strong>
+                        {% endif %}
+                    {% endfor %}
+                </span></a>
             {% endfor %}
             </ul>
             <br/>

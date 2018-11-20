@@ -2,7 +2,7 @@ from django.forms import ModelForm, forms
 from django import forms
 from django.contrib.auth.models import User
 from rejestracja.models import Podanie, PodanieKomentarze, Serwer, Rasa, Rola
-
+from bootstrap_datepicker_plus import DatePickerInput, TimePickerInput, DateTimePickerInput, MonthPickerInput, YearPickerInput
 
 class SerwerForm(ModelForm):
         class Meta:
