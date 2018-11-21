@@ -30,7 +30,8 @@ from .filters import AplikacjeZamknieteFilter
 from django.db.models import Q
 from django.db.models import Count
 ## pagination 
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+
+from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 
 
 
@@ -184,19 +185,16 @@ def AplikacjeZamkniete(request):
     f = AplikacjeZamknieteFilter(data, queryset=Podanie.objects.filter(Q(accepted=True) | Q(rejected=True)))
     c = Podanie.objects.annotate(num_comm=Count('comments')).filter(num_comm__gte=1)
 
-    paginator = Paginator(f.qs, 7)
-    page = request.GET.get('page')
-    
     try:
-        appli = paginator.page(page)
+        page = request.GET.get('page', 1)
     except PageNotAnInteger:
-        appli = paginator.page(1)
-    except EmptyPage:
-        appli = paginator.page(paginator.num_pages)
+        page = 1
+
+    p = Paginator(f.qs, request=request, per_page=7)
+    appli = p.page(page)
 
     context_dict = {'filter': f, 
                     'c': c,
-                    'page': page,
                     'appli': appli,}
     
     return render(request, 'aplikacje/aplikacje_closed.html', context=context_dict)

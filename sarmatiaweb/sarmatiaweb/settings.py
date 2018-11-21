@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_filters',
     'bootstrap_datepicker_plus',
+    'pure_pagination',
 
 ]
 
@@ -153,3 +154,11 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 #e-mail
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+#pure-pagination
+PAGINATION_SETTINGS = {
+    'PAGE_RANGE_DISPLAYED': 7,
+    'MARGIN_PAGES_DISPLAYED': 2,
+
+    'SHOW_FIRST_PAGE_WHEN_INVALID': True,
+}

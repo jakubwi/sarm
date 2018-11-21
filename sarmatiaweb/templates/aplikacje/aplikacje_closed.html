@@ -4,6 +4,8 @@
 {% endblock %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
+{% load i18n %}
+
 
 {% block content %}
 <div class=container>
@@ -15,52 +17,7 @@
         <div class="card-body">
             <h3 class="text-dark text-center">Aplikacje Zamknięte:</h3>
             <p class='text-center text-dark'>Kliknij w nazwę postaci aby przejść do podania</p>
-
-            <nav>
-                    {% with querystring=request.get_full_path %}
-                        <ul class="pagination pagination-sm justify-content-center">
-
-                            {% if appli.has_previous %}
-                                {% if 'name' in querystring %}
-                                    {% if 'page' in querystring %}
-                                        <li class="page-item"><a class="page-link" href="{{ querystring|slice:":-7" }}&page={{ appli.previous_page_number }}"><span class="text-dark">&laquo;</span></a></li>
-                                    {% else %}
-                                        <li class="page-item"><a class="page-link" href="{{ querystring }}&page={{ appli.previous_page_number }}"><span class="text-dark">&laquo;</span></a></li>
-                                    {% endif %}
-                                {% else %}
-                                    <li class="page-item"><a class="page-link" href="?page={{ appli.previous_page_number }}"><span class="text-dark">&laquo;</span></a></li>
-                                {% endif %}
-                            {% endif %}
-
-                            {% for page in appli.paginator.page_range %}
-                                {% if 'name' in querystring %}
-                                    {% if 'page' in querystring %}
-                                        <li class="page-item"><a class="page-link" href="{{ querystring|slice:":-7" }}&page={{ page }}"><span class="text-dark">{{ page }}</span></a></li>
-                                    {% else %}
-                                        <li class="page-item"><a class="page-link" href="{{ querystring }}&page={{ page }}"><span class="text-dark">{{ page }}</span></a></li>
-                                    {% endif %}
-                                {% else %}
-                                    <li class="page-item"><a class="page-link" href="?page={{ page }}"><span class="text-dark">{{ page }}</span></a></li>
-                                {% endif %}
-                            {% endfor %}
-                
-       
-                            {% if appli.has_next %}
-                                {% if 'name' in querystring %}
-                                    {% if 'page' in querystring %}
-                                        <li class="page-item"><a class="page-link" href="{{ querystring|slice:":-7" }}&page={{ appli.next_page_number }}"><span class="text-dark">&raquo;</span></a></li>
-                                    {% else %}
-                                        <li class="page-item"><a class="page-link" href="{{ querystring }}&page={{ appli.next_page_number }}"><span class="text-dark">&raquo;</span></a></li>
-                                    {% endif %}
-                                {% else %}
-                                    <li class="page-item"><a class="page-link" href="?page={{ appli.next_page_number }}"><span class="text-dark">&raquo;</span></a></li>
-                                {% endif %}
-                            {% endif %}
-                
-                        </ul>
-                    {% endwith %}
-                
-            </nav>
+           
             <table class="table table-bordered">
                 <thead>
                     <tr class="bg-light">
@@ -71,7 +28,7 @@
                     </tr>
                 </thead>
                 <tbody>
-            {% for obj in appli %}
+            {% for obj in appli.object_list %}
                 <tr>
                 {% if obj.accepted %}
                         <td><p><a href="{% url 'aplikacja_detail' obj.pk %}" class="text-dark"><b>{{obj.name}}</b></a></p></td>
@@ -93,6 +50,9 @@
             {% endfor %}
                 </tbody>
             </table>
+            <div class="pagination">
+                    {{ appli.render }}      
+            </div>
             <br/>
             
             
