@@ -6,36 +6,115 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+<div class=container>
+<div class="row">
+<div class="col-md-auto">
+
+              
     <div class="card shadow-sm">
         <div class="card-body">
             <h3 class="text-dark text-center">Aplikacje Zamknięte:</h3>
-            <form action="" method="get">
-            {{ filter.form|crispy }}
-            <p class='text-right'><input class="btn btn-secondary" type="submit" value="Filtruj"></p>
-            </form>
-            <ul class="list-group">
-            {% for obj in filter.qs %}
+            <p class='text-center text-dark'>Kliknij w nazwę postaci aby przejść do podania</p>
+
+            <nav>
+                    {% with querystring=request.get_full_path %}
+                        <ul class="pagination pagination-sm justify-content-center">
+
+                            {% if appli.has_previous %}
+                                {% if 'name' in querystring %}
+                                    {% if 'page' in querystring %}
+                                        <li class="page-item"><a class="page-link" href="{{ querystring|slice:":-7" }}&page={{ appli.previous_page_number }}"><span class="text-dark">&laquo;</span></a></li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link" href="{{ querystring }}&page={{ appli.previous_page_number }}"><span class="text-dark">&laquo;</span></a></li>
+                                    {% endif %}
+                                {% else %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ appli.previous_page_number }}"><span class="text-dark">&laquo;</span></a></li>
+                                {% endif %}
+                            {% endif %}
+
+                            {% for page in appli.paginator.page_range %}
+                                {% if 'name' in querystring %}
+                                    {% if 'page' in querystring %}
+                                        <li class="page-item"><a class="page-link" href="{{ querystring|slice:":-7" }}&page={{ page }}"><span class="text-dark">{{ page }}</span></a></li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link" href="{{ querystring }}&page={{ page }}"><span class="text-dark">{{ page }}</span></a></li>
+                                    {% endif %}
+                                {% else %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ page }}"><span class="text-dark">{{ page }}</span></a></li>
+                                {% endif %}
+                            {% endfor %}
+                
+       
+                            {% if appli.has_next %}
+                                {% if 'name' in querystring %}
+                                    {% if 'page' in querystring %}
+                                        <li class="page-item"><a class="page-link" href="{{ querystring|slice:":-7" }}&page={{ appli.next_page_number }}"><span class="text-dark">&raquo;</span></a></li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link" href="{{ querystring }}&page={{ appli.next_page_number }}"><span class="text-dark">&raquo;</span></a></li>
+                                    {% endif %}
+                                {% else %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ appli.next_page_number }}"><span class="text-dark">&raquo;</span></a></li>
+                                {% endif %}
+                            {% endif %}
+                
+                        </ul>
+                    {% endwith %}
+                
+            </nav>
+            <table class="table table-bordered">
+                <thead>
+                    <tr class="bg-light">
+                        <th scope="col">Nazwa postaci</th>
+                        <th scope="col">Status aplikacji</th>
+                        <th scope="col">Data złożenia</th>
+                        <th scope="col">Komentarze</th>
+                    </tr>
+                </thead>
+                <tbody>
+            {% for obj in appli %}
+                <tr>
                 {% if obj.accepted %}
-                    <a href="{% url 'aplikacja_detail' obj.pk %}">
+                        <td><p><a href="{% url 'aplikacja_detail' obj.pk %}" class="text-dark"><b>{{obj.name}}</b></a></p></td>
+                        <td><p class="text-success"><b>ZAAKCEPTOWANA</b></p></td>
+                {% elif obj.rejected %}
+                        <td><p><a href="{% url 'aplikacja_detail' obj.pk %}" class="text-dark"><b>{{obj.name}}</b></a></p></td>
+                        <td><p class="text-dark"><b>ODRZUCONA</b></p></td>
                 {% endif %}
-                {% if obj.rejected %}
-                    <a href="{% url 'aplikacja_detail' obj.pk %}">
-                {% endif %}
-                <span class="text-center text-dark">
-                    <strong>{{ obj.name }} | APLIKACJA {% if obj.accepted %} ZAAKCEPTOWANA{% endif %}{% if obj.rejected %}ODRZUCONA{% endif %}</strong>
-                {{obj.date}}
+                        <td>{{obj.date}}</td>
+                        <td>
                     {% for podanie in c %}
                         {% if podanie == obj %}
-                        | Komentarze: <strong>{{ podanie.comments.count }}</strong>
-                        {% endif %}
+                        <span class="badge badge-pill badge-secondary">{{ podanie.comments.count }}</span>             
+                        {% endif %} 
                     {% endfor %}
-                </span></a>
+                        </td>
+
+                </tr>
             {% endfor %}
-            </ul>
+                </tbody>
+            </table>
             <br/>
-            <a class="btn btn-secondary" href="{% url 'panel_moda' %}" role="button">Powrót</a>
             
+            
+
+            <a class="btn btn-secondary" href="{% url 'panel_moda' %}" role="button">Powrót</a>
         </div>
     </div>
+    </div>
+    <div class="col">
+            <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h3 class="text-dark text-center">Filtruj wyniki:</h3>
+                        <p class='text-center text-dark'></p>
+                        <form action="" method="get">
+                                {{ filter.form|crispy }}
+                                <p class='text-right'><input class="btn btn-secondary" type="submit" value="Filtruj"></p>
+                                </form>
+                    </div>
+            </div>
+    </div>
+</div>
+</div>
+<br/>
 {% endblock %}
      

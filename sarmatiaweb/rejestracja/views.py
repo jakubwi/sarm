@@ -29,6 +29,9 @@ from django.contrib.auth.decorators import user_passes_test
 from .filters import AplikacjeZamknieteFilter
 from django.db.models import Q
 from django.db.models import Count
+## pagination 
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+
 
 
 
@@ -175,10 +178,26 @@ def PanelModaView(request):
 ## zaakceptowane i odrzucone podania
 @staff_member_required
 def AplikacjeZamkniete(request):
-    f = AplikacjeZamknieteFilter(request.GET, queryset=Podanie.objects.filter(Q(accepted=True) | Q(rejected=True)))
+    data = request.GET.copy()
+    if 'page' in data:
+        del data['page']
+    f = AplikacjeZamknieteFilter(data, queryset=Podanie.objects.filter(Q(accepted=True) | Q(rejected=True)))
     c = Podanie.objects.annotate(num_comm=Count('comments')).filter(num_comm__gte=1)
 
-    context_dict = {'filter': f, 'c':c}
+    paginator = Paginator(f.qs, 7)
+    page = request.GET.get('page')
+    
+    try:
+        appli = paginator.page(page)
+    except PageNotAnInteger:
+        appli = paginator.page(1)
+    except EmptyPage:
+        appli = paginator.page(paginator.num_pages)
+
+    context_dict = {'filter': f, 
+                    'c': c,
+                    'page': page,
+                    'appli': appli,}
     
     return render(request, 'aplikacje/aplikacje_closed.html', context=context_dict)
 
