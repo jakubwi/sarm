@@ -5,11 +5,13 @@ from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from pages.models import Rekrutacja, Klasa, Killshot
 from rejestracja.models import Podanie
 from pages.forms import TworzenieKlasyForm, RekrutacjaNowaForm, KillshotCreateForm, RekrutacjaForm, RekrutacjaFormSet
+from progress.models import Boss, Raid, Expansion
 ## login required / is_staff /admin
 from django.contrib.auth.mixins import LoginRequiredMixin, AccessMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
+from django.db.models import Count
 
 class LogoutIfNotStaffMixin(AccessMixin):
     def dispatch(self, request, *args, **kwargs):
@@ -19,15 +21,62 @@ class LogoutIfNotStaffMixin(AccessMixin):
         return super(LogoutIfNotStaffMixin, self).dispatch(request, *args, **kwargs)
 
 
-class HomePageView(ListView):
-    context_object_name = 'class_list'    
+class HomePageView(ListView):   
     template_name = 'home.html'
-    queryset = Klasa.objects.order_by('name')
+
+    def get_queryset(self):
+        aktualny_dodatek = Expansion.objects.all().order_by('-position')[0]
+        poprzedni_dodatek = Expansion.objects.all().order_by('-position')[1]
+        if aktualny_dodatek.raids.all().count() <= 1:
+            poprzednie_raidy = {}
+            for raid in poprzedni_dodatek.raids.all():
+                mythic = 0
+                heroic = 0
+                normal = 0
+                for boss in raid.bosses.all():
+                    if boss.mythic:
+                        mythic += 1
+                    if boss.heroic:
+                        heroic += 1
+                    if boss.normal:
+                        normal += 1
+                if mythic >= 1:
+                    poprzednie_raidy[raid.name] = ['Mythic', mythic, raid.bosses.all().count()]
+                elif heroic >= 1:
+                    poprzednie_raidy[raid.name] = ['Heroic', heroic, raid.bosses.all().count()]
+                elif normal >= 1:
+                    poprzednie_raidy[raid.name] = ['Normal', normal, raid.bosses.all().count()]
+            queryset = poprzednie_raidy
+            return queryset
+        elif aktualny_dodatek.raids.all().count()  > 1:
+            aktualne_raidy = {}
+            for raid in aktualny_dodatek.raids.all():
+                mythic = 0
+                heroic = 0
+                normal = 0
+                for boss in raid.bosses.all():
+                    if boss.mythic:
+                        mythic += 1
+                    if boss.heroic:
+                        heroic += 1
+                    if boss.normal:
+                        normal += 1
+                if mythic >= 1:
+                    aktualne_raidy[raid.name] = ['Mythic', mythic, raid.bosses.all().count()]
+                elif heroic >= 1:
+                    aktualne_raidy[raid.name] = ['Heroic', heroic, raid.bosses.all().count()]
+                elif normal >= 1:
+                    aktualne_raidy[raid.name] = ['Normal', normal, raid.bosses.all().count()]
+            queryset = aktualne_raidy
+            return queryset
 
     def get_context_data(self, **kwargs):
         context = super(HomePageView, self).get_context_data(**kwargs)
+        context['class_list'] = Klasa.objects.order_by('name')
         context['killshots_list'] = Killshot.objects.order_by('date')
         context['first_shot'] = Killshot.objects.all().first()
+        context['aktualny_dodatek'] = Expansion.objects.all().order_by('-position')[0]
+        context['poprzedni_dodatek'] = Expansion.objects.all().order_by('-position')[1]
         return context
 
 ### dodaj/usun killshot

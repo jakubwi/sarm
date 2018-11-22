@@ -38,22 +38,56 @@
 
       <div class="col-sm">
         <div class="card shadow-sm">
-          <div class="card-body d-flex flex-column">
-            <h3 class="mb-0">
-              <a class="text-dark" href="#">Progress</a>
-            </h3>
-            <div class="mb-1 text-muted">Nov 12</div>
-            <p class="card-text mb-auto">This is a wider card with supporting text below as a natural lead-in to additional content.</p>
-          </div>
+          <div class="card-body">
+              <h3 class="text-dark text-center"><b>Progress: {{aktualny_dodatek}}</b></h3>
+                <br/>
+
+                    {% for raid in aktualny_dodatek.raids.all %}
+                        {% if raid.aktualny %}
+                        <table class='table'>
+                            <thead>
+                                <th scope="col" class='text-center'>{{ raid.name }}</th>
+                                <th scope="col" class='text-center'>Kill</th>
+                            </thead>
+                            {% for boss in raid.bosses.all %}
+                                <tbody>
+                                    <th scope='row'>{{ boss.name }}</th>
+                                    <td class='text-center'>{% if boss.mythic %}<span class="badge badge-danger">MYTHIC</span>{% elif boss.heroic %}<span class="badge badge-primary">HEROIC</span>{% elif boss.normal %}<span class="badge badge-secondary">NORMAL</span>{% else %}<span class="badge badge-dark">NIE</span>{% endif %}</td>
+                                </tbody>
+                            {% endfor %}
+                        </table>
+                        {% endif %}
+                    {% empty %}
+                    <h5 class='text-center'>Aktualnie nie został otwarty żaden raid</h6>
+                    {% endfor %}
+                        <hr/>
+                <h5 class='text-dark text-center'>{% if aktualny_dodatek.raids.count <= 1 %}<strong>{{poprzedni_dodatek.name}}</strong>{% elif aktualny_dodatek.raids.count > 1 %}{% endif %}</h5>
+                    <table class='table'>
+                        {% for key, value in object_list.items %}
+                        <tbody>
+                            {% if value.0 == 'Mythic' %}
+                            <td>{{key}} </td>
+                            <td>[{{value.1}}/{{value.2}}] <span class="badge badge-danger"> M </span></td>
+                            {% elif value.0 == 'Heroic' %}
+                            <td>{{key}} </td>
+                            <td>[{{value.1}}/{{value.2}}] <span class="badge badge-primary"> H </span></td>
+                            {% elif value.0 == 'Normal' %}
+                            <td>{{key}} </td>
+                            <td>[{{value.1}}/{{value.2}}] <span class="badge badge-secondary"> N </span></td>
+                            {% endif %}
+                        </tbody>
+                        {% empty %}
+                        {% endfor %}
+                    </table>
+           </div>
         </div>
+        <br/>
       </div>
 
       <div class="col-sm">
         <div class="card shadow-sm">
           <div class="card-body">
-            <h3 class="mb-0">
-              <h3 class='text-dark text-center'><b>Rekrutacja</b></a>
-            </h3>
+              <h3 class='text-dark text-center'><b>Rekrutacja</b></h3>
             <br/>
             {% if class_list %}
             <table class='table'>

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'pages',
     'rejestracja',
     'users',
+    'progress',
     #3rd party
     'crispy_forms',
     'django_filters',
