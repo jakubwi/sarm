@@ -15,7 +15,7 @@ class BossInline(admin.StackedInline):
     model = Boss
 
 class RaidAdmin(admin.ModelAdmin):
-    list_display = ('name', 'expansion', 'aktualny')
+    list_display = ('name', 'expansion', 'position', 'aktualny')
     inlines = [BossInline]
 
 admin.site.register(Expansion, ExpansionAdmin)

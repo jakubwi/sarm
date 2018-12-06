@@ -35,7 +35,7 @@
             {% endif %}
             <h3 class="text-dark text-left">Dostępne akcje:</h3>
             <ul class="list-group">
-                <a href="{% url 'killshot_create' %}" class="list-group-item list-group-item-action list-group-item-success">Dodaj killshot</a> 
+                <a href="{% url 'progress' %}" class="list-group-item list-group-item-action list-group-item-success">Edytuj progress</a> 
                 <a href="{% url 'rasa_create' %}" class="list-group-item list-group-item-action list-group-item-success">Dodaj nową rasę</a>
                 <a href="{% url 'klasa_create' %}" class="list-group-item list-group-item-action list-group-item-success">Dodaj nową klasę</a>
                 <a href="{% url 'rola_create' %}" class="list-group-item list-group-item-action list-group-item-success">Dodaj nową rolę</a>
@@ -43,7 +43,6 @@
             </ul>
             <br/>
             <ul class="list-group">
-                <a href="{% url 'killshot_lista' %}" class="list-group-item list-group-item-action list-group-item-danger">Usuń killshot</a>
                 <a href="{% url 'rasa_lista' %}" class="list-group-item list-group-item-action list-group-item-danger">Usuń rasę</a>                        
                 <a href="{% url 'klasa_lista' %}" class="list-group-item list-group-item-action list-group-item-danger">Usuń klasę</a>
                 <a href="{% url 'rola_lista' %}" class="list-group-item list-group-item-action list-group-item-danger">Usuń rolę</a>

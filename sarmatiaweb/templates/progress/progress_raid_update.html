@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block extrablockhead2 %}
+
+{% endblock %}
+{% block content %}
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h3 class="mb-0">
+            <p class="text-center">
+              <h3 class="text-dark text-center">{{ raid.name }}</a>
+            </p>
+            </h3>
+
+            <br/>
+
+            <script type="text/html" id="bosses-template">
+              <div id="bosses-__prefix__" class="form-inline">
+                {% for field in formset.empty_form.visible_fields %}
+                {{form.id}}
+                  {% if field.label == 'Nazwa' %}
+                    <strong>{{field|as_crispy_field}}</strong>
+                  {% elif field.name == 'position' %}
+                    {{field|as_crispy_field}}
+                  {% else %}
+                    {{ field|as_crispy_field }}
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </script>
+
+              <form action="" method="post" >
+                {% csrf_token %}
+                {{ formset.management_form }}
+                <div id="bosses-form-container">
+                    {% for form in formset %}
+                        <div id="bosses-{{ forloop.counter0 }}" class="form-inline">
+                          {% for field in form.visible_fields %}
+                            {{form.id}}
+                              {% if field.label == 'Nazwa' %}
+                                <strong>{{field|as_crispy_field}}</strong>
+                              {% elif field.name == 'position' %}
+                                {{field|as_crispy_field}}
+                              {% else %}
+                                {{ field|as_crispy_field }}
+                              {% endif %}
+                          {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <br/>
+                <a href="#" id="add-item-button" class="btn btn-info add-item">Dodaj bossa</a>
+                <br/>
+                {{form|crispy}}
+                <br/>
+                <input class="btn btn-success" type="submit" value="Zapisz">
+                </form>
+                <br/>
+
+
+            <p class="text-right">
+                <a class="btn btn-danger" href="{% url 'progress_raid_delete' raid.pk %}" role="button">Usuń raid</a>
+            </p>
+
+          </div>
+        </div>
+        <br/>
+{% endblock %}
+     

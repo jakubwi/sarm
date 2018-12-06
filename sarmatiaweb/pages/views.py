@@ -25,8 +25,12 @@ class HomePageView(ListView):
     template_name = 'home.html'
 
     def get_queryset(self):
-        aktualny_dodatek = Expansion.objects.all().order_by('-position')[0]
-        poprzedni_dodatek = Expansion.objects.all().order_by('-position')[1]
+        try:
+            aktualny_dodatek = Expansion.objects.all().order_by('-position')[0]
+            poprzedni_dodatek = Expansion.objects.all().order_by('-position')[1]
+        except IndexError:
+            queryset = None
+            return queryset
         if aktualny_dodatek.raids.all().count() <= 1:
             poprzednie_raidy = {}
             for raid in poprzedni_dodatek.raids.all():
@@ -46,6 +50,8 @@ class HomePageView(ListView):
                     poprzednie_raidy[raid.name] = ['Heroic', heroic, raid.bosses.all().count()]
                 elif normal >= 1:
                     poprzednie_raidy[raid.name] = ['Normal', normal, raid.bosses.all().count()]
+                else:
+                    poprzednie_raidy[raid.name] = ['Nie', 0, raid.bosses.all().count()]
             queryset = poprzednie_raidy
             return queryset
         elif aktualny_dodatek.raids.all().count()  > 1:
@@ -67,16 +73,24 @@ class HomePageView(ListView):
                     aktualne_raidy[raid.name] = ['Heroic', heroic, raid.bosses.all().count()]
                 elif normal >= 1:
                     aktualne_raidy[raid.name] = ['Normal', normal, raid.bosses.all().count()]
+                else:
+                    aktualne_raidy[raid.name] = ['Nie', 0, raid.bosses.all().count()]
             queryset = aktualne_raidy
             return queryset
+        else:
+            pass
 
     def get_context_data(self, **kwargs):
         context = super(HomePageView, self).get_context_data(**kwargs)
         context['class_list'] = Klasa.objects.order_by('name')
         context['killshots_list'] = Killshot.objects.order_by('date')
         context['first_shot'] = Killshot.objects.all().first()
-        context['aktualny_dodatek'] = Expansion.objects.all().order_by('-position')[0]
-        context['poprzedni_dodatek'] = Expansion.objects.all().order_by('-position')[1]
+        try:
+            context['aktualny_dodatek'] = Expansion.objects.all().order_by('-position')[0]
+            context['poprzedni_dodatek'] = Expansion.objects.all().order_by('-position')[1]
+        except IndexError:
+            context['aktualny_dodatek'] = None
+            context['poprzedni_dodatek'] = None
         return context
 
 ### dodaj/usun killshot

@@ -3,6 +3,7 @@
 
 
 {% block content %}
+
 <div id="carousel" class="carousel slide carousel-fade" data-ride="carousel">
 <div class="carousel-inner">
     {% for killshot in killshots_list %}
@@ -22,7 +23,9 @@
     </div>
     {% endif %}
     {% endfor %}
+    
 </div>
+
     <a class="carousel-control-prev" href="#carousel" role="button" data-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="sr-only">Previous</span>
@@ -32,27 +35,52 @@
         <span class="sr-only">Next</span>
     </a>
 </div>
-<br/>
 
+{% if request.user.is_staff %}
+<p class="text-right">
+        <a class="btn btn-danger btn-sm" href="{% url 'killshot_create' %}" role="button">Dodaj</a>
+        <a class="btn btn-danger btn-sm" href="{% url 'killshot_lista' %}" role="button">Usuń</a>
+</p>
+{% else %}
+<br/>
+{% endif %}
     <div class="row">
 
       <div class="col-sm">
         <div class="card shadow-sm">
           <div class="card-body">
-              <h3 class="text-dark text-center"><b>Progress: {{aktualny_dodatek}}</b></h3>
+              <h3 class="text-dark text-center"><b>Progress: 
+                  {% if aktualny_dodatek != None %}
+                    {% for raid in aktualny_dodatek.raids.all %}
+                        {% if raid.aktualny %}
+                        {{ raid.name }}
+                        {% endif %}
+                    {% endfor %}
+                  {% else %} ... 
+                  {% endif %}</b></h3>
                 <br/>
 
                     {% for raid in aktualny_dodatek.raids.all %}
                         {% if raid.aktualny %}
                         <table class='table'>
                             <thead>
-                                <th scope="col" class='text-center'>{{ raid.name }}</th>
+                                <th scope="col" class='text-center'>Boss</th>
                                 <th scope="col" class='text-center'>Kill</th>
                             </thead>
                             {% for boss in raid.bosses.all %}
                                 <tbody>
                                     <th scope='row'>{{ boss.name }}</th>
-                                    <td class='text-center'>{% if boss.mythic %}<span class="badge badge-danger">MYTHIC</span>{% elif boss.heroic %}<span class="badge badge-primary">HEROIC</span>{% elif boss.normal %}<span class="badge badge-secondary">NORMAL</span>{% else %}<span class="badge badge-dark">NIE</span>{% endif %}</td>
+                                    <td class='text-center'>
+                                        {% if boss.mythic %}
+                                        <span class="badge badge-danger">MYTHIC</span>
+                                        {% elif boss.heroic %}<span class="badge badge-primary">HEROIC</span>
+                                        {% elif boss.normal %}<span class="badge badge-secondary">NORMAL</span>
+                                        {% else %}<span class="badge badge-dark">NIE</span>
+                                        {% endif %}
+                                        {% if request.user.is_staff %}
+                                        <a href="{% url 'progress_boss_update' boss.pk %}" class="badge badge-light">Edytuj</a>
+                                        {% endif %}
+                                    </td>
                                 </tbody>
                             {% endfor %}
                         </table>
@@ -61,25 +89,59 @@
                     <h5 class='text-center'>Aktualnie nie został otwarty żaden raid</h6>
                     {% endfor %}
                         <hr/>
-                <h5 class='text-dark text-center'>{% if aktualny_dodatek.raids.count <= 1 %}<strong>{{poprzedni_dodatek.name}}</strong>{% elif aktualny_dodatek.raids.count > 1 %}{% endif %}</h5>
+                <h5 class='text-dark text-center'>{% if aktualny_dodatek.raids.count <= 1 %}<strong>{{poprzedni_dodatek.name}}</strong>{% elif aktualny_dodatek.raids.count > 1 %}<strong>{{aktualny_dodatek.name}}</strong>{% endif %}</h5>
                     <table class='table'>
                         {% for key, value in object_list.items %}
                         <tbody>
-                            {% if value.0 == 'Mythic' %}
-                            <td>{{key}} </td>
-                            <td>[{{value.1}}/{{value.2}}] <span class="badge badge-danger"> M </span></td>
-                            {% elif value.0 == 'Heroic' %}
-                            <td>{{key}} </td>
-                            <td>[{{value.1}}/{{value.2}}] <span class="badge badge-primary"> H </span></td>
-                            {% elif value.0 == 'Normal' %}
-                            <td>{{key}} </td>
-                            <td>[{{value.1}}/{{value.2}}] <span class="badge badge-secondary"> N </span></td>
+                            {% for raid in aktualny_dodatek.raids.all %}
+                            {% if key == raid.name %}
+                                {% if not raid.aktualny %}
+                                    {% if value.0 == 'Mythic' %}
+                                    <td>{{key}} </td>
+                                    <td>[{{value.1}}/{{value.2}}] <span class="badge badge-danger"> M </span></td>
+                                    {% elif value.0 == 'Heroic' %}
+                                    <td>{{key}} </td>
+                                    <td>[{{value.1}}/{{value.2}}] <span class="badge badge-primary"> H </span></td>
+                                    {% elif value.0 == 'Normal' %}
+                                    <td>{{key}} </td>
+                                    <td>[{{value.1}}/{{value.2}}] <span class="badge badge-secondary"> N </span></td>
+                                    {% else %}
+                                    <td>{{key}}</td>
+                                    <td>[{{value.1}}/{{value.2}}] <span class="badge badge-secondary"> X </span></td>
+                                    {% endif %}
+                                {% endif %}
                             {% endif %}
+                            {% endfor %}
+                            {% for raid in poprzedni_dodatek.raids.all %}
+                            {% if key == raid.name %}
+                                {% if not raid.aktualny %}
+                                    {% if value.0 == 'Mythic' %}
+                                    <td>{{key}} </td>
+                                    <td>[{{value.1}}/{{value.2}}] <span class="badge badge-danger"> M </span></td>
+                                    {% elif value.0 == 'Heroic' %}
+                                    <td>{{key}} </td>
+                                    <td>[{{value.1}}/{{value.2}}] <span class="badge badge-primary"> H </span></td>
+                                    {% elif value.0 == 'Normal' %}
+                                    <td>{{key}} </td>
+                                    <td>[{{value.1}}/{{value.2}}] <span class="badge badge-secondary"> N </span></td>
+                                    {% else %}
+                                    <td>{{key}}</td>
+                                    <td>[{{value.1}}/{{value.2}}] <span class="badge badge-secondary"> X </span></td>
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                            {% endfor %}
                         </tbody>
                         {% empty %}
                         {% endfor %}
-                    </table>
+                    </table>            
+            {% if request.user.is_staff %}
+            <p class="text-right">
+            <a class="btn btn-danger btn-sm" href="{% url 'progress' %}" role="button">Edytuj</a>
+            </p>
+            {% endif %}
            </div>
+           
         </div>
         <br/>
       </div>
@@ -128,7 +190,7 @@
             {% endif %}
             <p class="text-right">
             {% if request.user.is_staff %}
-            <a class="btn btn-danger" href="{% url 'rekrutacja_update' %}" role="button">Edytuj</a>
+            <a class="btn btn-danger btn-sm" href="{% url 'rekrutacja_update' %}" role="button">Edytuj</a>
             </p>
             {% endif %}
             {% if not user.is_authenticated %}

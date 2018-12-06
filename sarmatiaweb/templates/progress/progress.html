@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+        <div class="card shadow-sm">
+          <div class="card-body">
+
+            <br/>
+            <h3 class="text-dark text-left">Raidy {{aktualny_dodatek.name}}:</h3>
+            <ul class="list-group">
+                {% for raid in aktualny_dodatek.raids.all %}
+                <a href="{% url 'progress_raid_update' raid.pk %}" class="list-group-item list-group-item-action list-group-item-info">
+                    {% if raid.aktualny %}
+                      <strong>{{ raid.name }}</strong>
+                    {% else %}
+                      {{ raid.name }}
+                    {% endif %}
+                </a>   
+                {% endfor %} 
+            <a href="{% url 'progress_raid_create' %}" class="list-group-item list-group-item-action list-group-item-success">Dodaj raid</a>
+            </ul>
+            <br/>
+
+            <h3 class="text-dark text-left">Dodatki:</h3>
+            <ul class="list-group">
+            {% for object in expansion_list %}
+            <a href="{% url 'progress_expansion_update' object.pk %}" class="list-group-item list-group-item-action list-group-item-info">
+                {% if object.aktualny %}<strong>{{ object.name }}</strong>{% else %}{{object.name}}{% endif %}<br/>
+            </a> 
+            {% endfor %}
+            <a href="{% url 'progress_expansion_create' %}" class="list-group-item list-group-item-action list-group-item-success">Nowy dodatek!</a>
+            </ul>
+            <br/>
+
+            <h3 class="text-dark text-left">Edytuj stare raidy z: {{ poprzedni_dodatek.name }}</h3>
+            <ul class="list-group">
+            {% for raid in poprzedni_dodatek.raids.all %}
+            <a href="{% url 'progress_raid_update' raid.pk %}" class="list-group-item list-group-item-action list-group-item-info">
+                {{raid.name}}<br/>
+            </a> 
+            {% endfor %}
+            <a href="{% url 'progress_raid_create' %}" class="list-group-item list-group-item-action list-group-item-success">Dodaj raid</a>
+            </ul>
+
+            <br/>
+            <a class="btn btn-secondary" href="{% url 'home' %}" role="button">Powrót</a>
+          </div>
+        </div>
+{% endblock %}
+     

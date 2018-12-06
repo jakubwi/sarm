@@ -7,7 +7,7 @@ class Expansion(models.Model):
 
     class Meta:
         verbose_name_plural = 'Expansions'
-        ordering = ('position',)
+        ordering = ('-position',)
 
     def __str__(self):
         return self.name
@@ -20,7 +20,7 @@ class Raid(models.Model):
     
     class Meta:
         verbose_name_plural = 'Raids'
-        ordering = ('position',)
+        ordering = ('-position',)
 
     def __str__(self):
         return self.name
@@ -36,6 +36,6 @@ class Boss(models.Model):
     class Meta:
         verbose_name_plural = 'Boss'
         ordering = ('position',)
-
+""" 
     def __str__(self):
-        return self.name
+        return self.name """

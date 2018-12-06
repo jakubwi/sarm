@@ -34,8 +34,6 @@ from django.db.models import Count
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 
 
-
-
 class LogoutIfNotStaffMixin(AccessMixin):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_staff:
