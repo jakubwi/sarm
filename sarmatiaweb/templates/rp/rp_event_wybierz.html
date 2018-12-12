@@ -1,0 +1,504 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h3 class='text-center text-danger'><strong>{{event.nazwa}}</strong></h3>
+        <h5 class='text-center'>
+            {{event.kiedy_dzien|date:'l'}}, {{event.kiedy_dzien}} {{event.kiedy_godzina}}
+        </h5>
+        <p class='text-center'><small class="text-muted">{{ event.opis }}</small></p>
+
+        <div class="row">
+            <div class="col-sm-6">
+            <div class="card">
+            <h5 class="card-header">Raid / Status:
+                {% if event.usuniety %}
+                <span class='text-danger'><strong>Usunięty</strong></span>
+                {% else %}
+                    {% if event.status == 1 %}
+                        <span class='text-success'><strong>Zapisy otwarte</strong></span>
+                    {% elif event.status == 2 %}
+                        <span class='text-info'><strong>Zamrożony</strong></span>
+                    {% else %}
+                        <span class='text-secondary'><strong>Zakończony</strong></span>
+                    {% endif %}
+                {% endif %} 
+            </h5>
+
+            <div class="card-body">
+                        Zatwierdzone: {{ wybrani.count }}<hr/>
+                        Oczekujące: {{ zapisani.count }}<hr/>
+                        Anulowane: {{ anulowani.count }}<hr/>
+                        Łącznie: {{ suma_bez_anulowanych }}({{suma}})
+            </div>
+            </div>
+            </div>
+            
+            <div class="col-sm-6">
+            <div class="card">
+                <h5 class="card-header">Legenda gotowości:</h5>
+                <div class="card-body">
+                        <span class="badge badge-success">3</span> - "Zależy na raidzie" <br/>
+                        <span class="badge badge-info">2</span> - "Może iść, może nie iść" <br/>
+                        <span class="badge badge-warning">1</span> - "Pójdzie wyłącznie jeśli będzie potrzebny" <br/>
+                        
+                    </div>
+            </div>
+            </div>
+        </div>
+
+        <br/>
+        
+       
+        
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-danger"><strong>Wybrany skład:</strong></h5>
+                <form action="" method="POST">
+                        {% csrf_token %}
+                <input class="btn btn-success" type="submit" value="Zapisz">
+                <hr/>
+                
+                <table class="table table-sm table-striped">
+                    {{ formsetTankWybrani.management_form }}
+                    <thead class='thead-dark'>
+                    <tr>
+                        <th scope="col" colspan="7" class='text-center'>Tanki</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for formTankWybrani in formsetTankWybrani %}
+                    {{formTankWybrani.id}}
+                    
+                        {% for zapis in tankiWybrani %}
+                        {% if formTankWybrani.kto.value == zapis.kto.id %}
+                        <tr>
+                            <td class='text-center'>
+                                    {% for fieldTankWybrani in formTankWybrani.visible_fields %}
+                                    {{fieldTankWybrani}}
+                                    {% endfor %}
+                                    {% for fieldTankWybrani in formTankWybrani.hidden_fields %}
+                                    {{fieldTankWybrani}}
+                                    {% endfor %}
+                            </td>
+                            <td class='text-center'>
+                                {% if zapis.gotowosc == '3' %}
+                                <span class="badge badge-success">{{ zapis.gotowosc }}</span>
+                                {% elif zapis.gotowosc == '2' %}
+                                <span class="badge badge-info">{{ zapis.gotowosc }}</span>
+                                {% elif zapis.gotowosc == '1' %}
+                                <span class="badge badge-warning">{{ zapis.gotowosc }}</span>
+                                {% endif %}
+                            </td>
+                            <td class='text-center'>{{ zapis.czym }}</td>
+                            <td class='text-center'><img src="{{ MEDIA_URL }}{{ zapis.czym.klasa.icon }}" class='rounded' height="25"/>|{{ zapis.czym.klasa }}</td>
+                            <td class='text-center'>Mainspec: <img src="/static/rekrutacja/tank.png"></td>
+                            <td class='text-center'>Offspec: {% if zapis.czym.offspec.name == 'Tank' %}
+                                        <img src="/static/rekrutacja/tank.png">
+                                        {% elif zapis.czym.offspec.name == 'Heal' %}
+                                        <img src="/static/rekrutacja/heal.png">
+                                        {% elif zapis.czym.offspec.name == 'Ranged' %}
+                                        <img src="/static/rekrutacja/ranged.png">
+                                        {% elif zapis.czym.offspec.name == 'Melee' %}
+                                        <img src="/static/rekrutacja/melee.png">
+                                        {% endif %}
+                            </td>
+                            <td class='text-center'>Komentarz: {% if zapis.komentarz %}{{ zapis.komentarz }}{% else %}-{% endif %}</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                    </tbody>
+                    </table>
+                <br/>
+                <table class="table table-sm table-striped">
+                        {{ formsetHealWybrani.management_form }}
+                        <thead class='thead-dark'>
+                        <tr>
+                            <th scope="col" colspan="7" class='text-center'>Healerzy</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for formHealWybrani in formsetHealWybrani %}
+                        {{formHealWybrani.id}}
+                        
+                            {% for zapis in healerzyWybrani %}
+                            {% if formHealWybrani.kto.value == zapis.kto.id %}
+                            <tr>
+                                <td class='text-center'>
+                                        {% for fieldHealWybrani in formHealWybrani.visible_fields %}
+                                        {{fieldHealWybrani}}
+                                        {% endfor %}
+                                        {% for fieldHealWybrani in formHealWybrani.hidden_fields %}
+                                        {{fieldHealWybrani}}
+                                        {% endfor %}
+                                </td>
+                                <td class='text-center'>
+                                    {% if zapis.gotowosc == '3' %}
+                                    <span class="badge badge-success">{{ zapis.gotowosc }}</span>
+                                    {% elif zapis.gotowosc == '2' %}
+                                    <span class="badge badge-info">{{ zapis.gotowosc }}</span>
+                                    {% elif zapis.gotowosc == '1' %}
+                                    <span class="badge badge-warning">{{ zapis.gotowosc }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class='text-center'>{{ zapis.czym }}</td>
+                                <td class='text-center'><img src="{{ MEDIA_URL }}{{ zapis.czym.klasa.icon }}" class='rounded' height="25"/>|{{ zapis.czym.klasa }}</td>
+                                <td class='text-center'>Mainspec: <img src="/static/rekrutacja/heal.png"></td>
+                                <td class='text-center'>Offspec: {% if zapis.czym.offspec.name == 'Tank' %}
+                                            <img src="/static/rekrutacja/tank.png">
+                                            {% elif zapis.czym.offspec.name == 'Heal' %}
+                                            <img src="/static/rekrutacja/heal.png">
+                                            {% elif zapis.czym.offspec.name == 'Ranged' %}
+                                            <img src="/static/rekrutacja/ranged.png">
+                                            {% elif zapis.czym.offspec.name == 'Melee' %}
+                                            <img src="/static/rekrutacja/melee.png">
+                                            {% endif %}
+                                </td>
+                                <td class='text-center'>Komentarz: {% if zapis.komentarz %}{{ zapis.komentarz }}{% else %}-{% endif %}</td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                        </tbody>
+                        </table>
+                        <br/>
+                <table class="table table-sm table-striped">
+                        {{ formsetRangedWybrani.management_form }}
+                        <thead class='thead-dark'>
+                        <tr>
+                            <th scope="col" colspan="7" class='text-center'>Ranged</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for formRangedWybrani in formsetRangedWybrani %}
+                        {{formRangedWybrani.id}}
+                        
+                            {% for zapis in rangedWybrani %}
+                            {% if formRangedWybrani.kto.value == zapis.kto.id %}
+                            <tr>
+                                <td class='text-center'>
+                                        {% for fieldRangedWybrani in formRangedWybrani.visible_fields %}
+                                        {{fieldRangedWybrani}}
+                                        {% endfor %}
+                                        {% for fieldRangedWybrani in formRangedWybrani.hidden_fields %}
+                                        {{fieldRangedWybrani}}
+                                        {% endfor %}
+                                </td>
+                                <td class='text-center'>
+                                    {% if zapis.gotowosc == '3' %}
+                                    <span class="badge badge-success">{{ zapis.gotowosc }}</span>
+                                    {% elif zapis.gotowosc == '2' %}
+                                    <span class="badge badge-info">{{ zapis.gotowosc }}</span>
+                                    {% elif zapis.gotowosc == '1' %}
+                                    <span class="badge badge-warning">{{ zapis.gotowosc }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class='text-center'>{{ zapis.czym }}</td>
+                                <td class='text-center'><img src="{{ MEDIA_URL }}{{ zapis.czym.klasa.icon }}" class='rounded' height="25"/>|{{ zapis.czym.klasa }}</td>
+                                <td class='text-center'>Mainspec: <img src="/static/rekrutacja/ranged.png"></td>
+                                <td class='text-center'>Offspec: {% if zapis.czym.offspec.name == 'Tank' %}
+                                            <img src="/static/rekrutacja/tank.png">
+                                            {% elif zapis.czym.offspec.name == 'Heal' %}
+                                            <img src="/static/rekrutacja/heal.png">
+                                            {% elif zapis.czym.offspec.name == 'Ranged' %}
+                                            <img src="/static/rekrutacja/ranged.png">
+                                            {% elif zapis.czym.offspec.name == 'Melee' %}
+                                            <img src="/static/rekrutacja/melee.png">
+                                            {% endif %}
+                                </td>
+                                <td class='text-center'>Komentarz: {% if zapis.komentarz %}{{ zapis.komentarz }}{% else %}-{% endif %}</td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                        </tbody>
+                        </table>
+                        <br/>
+                        <table class="table table-sm table-striped">
+                                {{ formsetMeleeWybrani.management_form }}
+                                <thead class='thead-dark'>
+                                <tr>
+                                    <th scope="col" colspan="7" class='text-center'>Melee</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for formMeleeWybrani in formsetMeleeWybrani %}
+                                {{formMeleeWybrani.id}}
+                                
+                                    {% for zapis in meleeWybrani %}
+                                    {% if formMeleeWybrani.kto.value == zapis.kto.id %}
+                                    <tr>
+                                        <td class='text-center'>
+                                                {% for fieldMeleeWybrani in formMeleeWybrani.visible_fields %}
+                                                {{fieldMeleeWybrani}}
+                                                {% endfor %}
+                                                {% for fieldMeleeWybrani in formMeleeWybrani.hidden_fields %}
+                                                {{fieldMeleeWybrani}}
+                                                {% endfor %}
+                                        </td>
+                                        <td class='text-center'>
+                                            {% if zapis.gotowosc == '3' %}
+                                            <span class="badge badge-success">{{ zapis.gotowosc }}</span>
+                                            {% elif zapis.gotowosc == '2' %}
+                                            <span class="badge badge-info">{{ zapis.gotowosc }}</span>
+                                            {% elif zapis.gotowosc == '1' %}
+                                            <span class="badge badge-warning">{{ zapis.gotowosc }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class='text-center'>{{ zapis.czym }}</td>
+                                        <td class='text-center'><img src="{{ MEDIA_URL }}{{ zapis.czym.klasa.icon }}" class='rounded' height="25"/>|{{ zapis.czym.klasa }}</td>
+                                        <td class='text-center'>Mainspec: <img src="/static/rekrutacja/melee.png"></td>
+                                        <td class='text-center'>Offspec: {% if zapis.czym.offspec.name == 'Tank' %}
+                                                    <img src="/static/rekrutacja/tank.png">
+                                                    {% elif zapis.czym.offspec.name == 'Heal' %}
+                                                    <img src="/static/rekrutacja/heal.png">
+                                                    {% elif zapis.czym.offspec.name == 'Ranged' %}
+                                                    <img src="/static/rekrutacja/ranged.png">
+                                                    {% elif zapis.czym.offspec.name == 'Melee' %}
+                                                    <img src="/static/rekrutacja/melee.png">
+                                                    {% endif %}
+                                        </td>
+                                        <td class='text-center'>Komentarz: {% if zapis.komentarz %}{{ zapis.komentarz }}{% else %}-{% endif %}</td>
+                                    </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                                </tbody>
+                                </table>
+                                
+                                
+            </div>
+        </div>
+        <br/>
+      
+        <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-danger"><strong>Oczekują:</strong></h5>
+                    
+                    <input class="btn btn-success" type="submit" value="Zapisz">
+                    <hr/>
+                    
+                    <table class="table table-sm table-striped">
+                        {{ formsetTank.management_form }}
+                        <thead class='thead-dark'>
+                        <tr>
+                            <th scope="col" colspan="7" class='text-center'>Tanki</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for formTank in formsetTank %}
+                        {{formTank.id}}
+                        
+                            {% for zapis in tanki %}
+                            {% if formTank.kto.value == zapis.kto.id %}
+                            <tr>
+                                <td class='text-center'>
+                                        {% for fieldTank in formTank.visible_fields %}
+                                        {{fieldTank}}
+                                        {% endfor %}
+                                        {% for fieldTank in formTank.hidden_fields %}
+                                        {{fieldTank}}
+                                        {% endfor %}
+                                </td>
+                                <td class='text-center'>
+                                    {% if zapis.gotowosc == '3' %}
+                                    <span class="badge badge-success">{{ zapis.gotowosc }}</span>
+                                    {% elif zapis.gotowosc == '2' %}
+                                    <span class="badge badge-info">{{ zapis.gotowosc }}</span>
+                                    {% elif zapis.gotowosc == '1' %}
+                                    <span class="badge badge-warning">{{ zapis.gotowosc }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class='text-center'>{{ zapis.czym }}</td>
+                                <td class='text-center'><img src="{{ MEDIA_URL }}{{ zapis.czym.klasa.icon }}" class='rounded' height="25"/>|{{ zapis.czym.klasa }}</td>
+                                <td class='text-center'>Mainspec: <img src="/static/rekrutacja/tank.png"></td>
+                                <td class='text-center'>Offspec: {% if zapis.czym.offspec.name == 'Tank' %}
+                                            <img src="/static/rekrutacja/tank.png">
+                                            {% elif zapis.czym.offspec.name == 'Heal' %}
+                                            <img src="/static/rekrutacja/heal.png">
+                                            {% elif zapis.czym.offspec.name == 'Ranged' %}
+                                            <img src="/static/rekrutacja/ranged.png">
+                                            {% elif zapis.czym.offspec.name == 'Melee' %}
+                                            <img src="/static/rekrutacja/melee.png">
+                                            {% endif %}
+                                </td>
+                                <td class='text-center'>Komentarz: {% if zapis.komentarz %}{{ zapis.komentarz }}{% else %}-{% endif %}</td>
+                            </tr>
+                            {% endif %}
+                            
+                            {% endfor %}
+                        {% endfor %}
+                        </tbody>
+                        </table>
+                    <br/>
+                    <table class="table table-sm table-striped">
+                            {{ formsetHeal.management_form }}
+                            <thead class='thead-dark'>
+                            <tr>
+                                <th scope="col" colspan="7" class='text-center'>Healerzy</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for formHeal in formsetHeal %}
+                            {{formHeal.id}}
+                            
+                                {% for zapis in healerzy %}
+                                {% if formHeal.kto.value == zapis.kto.id %}
+                                <tr>
+                                    <td class='text-center'>
+                                            {% for fieldHeal in formHeal.visible_fields %}
+                                            {{fieldHeal}}
+                                            {% endfor %}
+                                            {% for fieldHeal in formHeal.hidden_fields %}
+                                            {{fieldHeal}}
+                                            {% endfor %}
+                                    </td>
+                                    <td class='text-center'>
+                                        {% if zapis.gotowosc == '3' %}
+                                        <span class="badge badge-success">{{ zapis.gotowosc }}</span>
+                                        {% elif zapis.gotowosc == '2' %}
+                                        <span class="badge badge-info">{{ zapis.gotowosc }}</span>
+                                        {% elif zapis.gotowosc == '1' %}
+                                        <span class="badge badge-warning">{{ zapis.gotowosc }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class='text-center'>{{ zapis.czym }}</td>
+                                    <td class='text-center'><img src="{{ MEDIA_URL }}{{ zapis.czym.klasa.icon }}" class='rounded' height="25"/>|{{ zapis.czym.klasa }}</td>
+                                    <td class='text-center'>Mainspec: <img src="/static/rekrutacja/heal.png"></td>
+                                    <td class='text-center'>Offspec: {% if zapis.czym.offspec.name == 'Tank' %}
+                                                <img src="/static/rekrutacja/tank.png">
+                                                {% elif zapis.czym.offspec.name == 'Heal' %}
+                                                <img src="/static/rekrutacja/heal.png">
+                                                {% elif zapis.czym.offspec.name == 'Ranged' %}
+                                                <img src="/static/rekrutacja/ranged.png">
+                                                {% elif zapis.czym.offspec.name == 'Melee' %}
+                                                <img src="/static/rekrutacja/melee.png">
+                                                {% endif %}
+                                    </td>
+                                    <td class='text-center'>Komentarz: {% if zapis.komentarz %}{{ zapis.komentarz }}{% else %}-{% endif %}</td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                            </tbody>
+                            </table>
+                            <br/>
+                    <table class="table table-sm table-striped">
+                            {{ formsetRanged.management_form }}
+                            <thead class='thead-dark'>
+                            <tr>
+                                <th scope="col" colspan="7" class='text-center'>Ranged</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for formRanged in formsetRanged %}
+                            {{formRanged.id}}
+                            
+                                {% for zapis in ranged %}
+                                {% if formRanged.kto.value == zapis.kto.id %}
+                                <tr>
+                                    <td class='text-center'>
+                                            {% for fieldRanged in formRanged.visible_fields %}
+                                            {{fieldRanged}}
+                                            {% endfor %}
+                                            {% for fieldRanged in formRanged.hidden_fields %}
+                                            {{fieldRanged}}
+                                            {% endfor %}
+                                    </td>
+                                    <td class='text-center'>
+                                        {% if zapis.gotowosc == '3' %}
+                                        <span class="badge badge-success">{{ zapis.gotowosc }}</span>
+                                        {% elif zapis.gotowosc == '2' %}
+                                        <span class="badge badge-info">{{ zapis.gotowosc }}</span>
+                                        {% elif zapis.gotowosc == '1' %}
+                                        <span class="badge badge-warning">{{ zapis.gotowosc }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class='text-center'>{{ zapis.czym }}</td>
+                                    <td class='text-center'><img src="{{ MEDIA_URL }}{{ zapis.czym.klasa.icon }}" class='rounded' height="25"/>|{{ zapis.czym.klasa }}</td>
+                                    <td class='text-center'>Mainspec: <img src="/static/rekrutacja/ranged.png"></td>
+                                    <td class='text-center'>Offspec: {% if zapis.czym.offspec.name == 'Tank' %}
+                                                <img src="/static/rekrutacja/tank.png">
+                                                {% elif zapis.czym.offspec.name == 'Heal' %}
+                                                <img src="/static/rekrutacja/heal.png">
+                                                {% elif zapis.czym.offspec.name == 'Ranged' %}
+                                                <img src="/static/rekrutacja/ranged.png">
+                                                {% elif zapis.czym.offspec.name == 'Melee' %}
+                                                <img src="/static/rekrutacja/melee.png">
+                                                {% endif %}
+                                    </td>
+                                    <td class='text-center'>Komentarz: {% if zapis.komentarz %}{{ zapis.komentarz }}{% else %}-{% endif %}</td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                            </tbody>
+                            </table>
+                            <br/>
+                            <table class="table table-sm table-striped">
+                                    {{ formsetMelee.management_form }}
+                                    <thead class='thead-dark'>
+                                    <tr>
+                                        <th scope="col" colspan="7" class='text-center'>Melee</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for formMelee in formsetMelee %}
+                                    {{formMelee.id}}
+                                    
+                                        {% for zapis in melee %}
+                                        {% if formMelee.kto.value == zapis.kto.id %}
+                                        <tr>
+                                            <td class='text-center'>
+                                                    {% for fieldMelee in formMelee.visible_fields %}
+                                                    {{fieldMelee}}
+                                                    {% endfor %}
+                                                    {% for fieldMelee in formMelee.hidden_fields %}
+                                                    {{fieldMelee}}
+                                                    {% endfor %}
+                                            </td>
+                                            <td class='text-center'>
+                                                {% if zapis.gotowosc == '3' %}
+                                                <span class="badge badge-success">{{ zapis.gotowosc }}</span>
+                                                {% elif zapis.gotowosc == '2' %}
+                                                <span class="badge badge-info">{{ zapis.gotowosc }}</span>
+                                                {% elif zapis.gotowosc == '1' %}
+                                                <span class="badge badge-warning">{{ zapis.gotowosc }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class='text-center'>{{ zapis.czym }}</td>
+                                            <td class='text-center'><img src="{{ MEDIA_URL }}{{ zapis.czym.klasa.icon }}" class='rounded' height="25"/>|{{ zapis.czym.klasa }}</td>
+                                            <td class='text-center'>Mainspec: <img src="/static/rekrutacja/melee.png"></td>
+                                            <td class='text-center'>Offspec: {% if zapis.czym.offspec.name == 'Tank' %}
+                                                        <img src="/static/rekrutacja/tank.png">
+                                                        {% elif zapis.czym.offspec.name == 'Heal' %}
+                                                        <img src="/static/rekrutacja/heal.png">
+                                                        {% elif zapis.czym.offspec.name == 'Ranged' %}
+                                                        <img src="/static/rekrutacja/ranged.png">
+                                                        {% elif zapis.czym.offspec.name == 'Melee' %}
+                                                        <img src="/static/rekrutacja/melee.png">
+                                                        {% endif %}
+                                            </td>
+                                            <td class='text-center'>Komentarz: {% if zapis.komentarz %}{{ zapis.komentarz }}{% else %}-{% endif %}</td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                    </tbody>
+                                    </table>
+                    
+                </div>
+            </div>
+            <br/>
+          
+        
+    </form>
+          </div>
+        </div>
+        <br/>
+{% endblock %}
+     

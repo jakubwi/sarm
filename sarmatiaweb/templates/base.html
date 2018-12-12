@@ -43,7 +43,7 @@
             <a class="p-2 text-white" href="{% url 'home' %}"><div style="font-size: 19px;">HOME</div></a>
             <a class="p-2 text-white" href="{% url 'home' %}"><div style="font-size: 19px;">O NAS</div></a>
             <a class="p-2 text-white" href="{% url 'home' %}"><div style="font-size: 19px;">FORUM</div></a>
-            <a class="p-2 text-white" href="{% url 'home' %}"><div style="font-size: 19px;">ZAPISY</div></a>
+            <a class="p-2 text-white" href="{% url 'rp' %}"><div style="font-size: 19px;">ZAPISY</div></a>
           {% if user.is_authenticated %}
             <a class="p-2 text-white" href="{% url 'profil' %}"><div style="font-size: 19px;">PROFIL</div></a>
             <a class="p-2 text-white" href="{% url 'logout' %}"><div style="font-size: 19px;">LOG OUT</div></a>

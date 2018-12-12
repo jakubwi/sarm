@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+        <div class="card shadow-sm">
+          <div class="card-body">
+
+            <br/>
+            <h3 class="text-dark text-left">Eventy:</h3>
+            
+                {% for object in object_list %}
+                {% if object.status == 3 %}
+
+                <a class='text-dark' href="{% url 'rp_event_detail' object.pk %}">
+                    {{ object.nazwa }}
+                    {{ object.kiedy_dzien }}
+                    {{ object.kiedy_godzina }}
+                    {{ object.miejsca }}
+                    {% if object.usuniety %}
+                      USUNIĘTY
+                    {% else %}
+                      ZAKOŃCZONY
+                    {% endif %}
+                </a><br/>
+                {% endif %}
+                {% endfor %} 
+            
+            <br/>
+
+            <br/>
+            <a class="btn btn-secondary" href="{% url 'rp' %}" role="button">Powrót</a>
+          </div>
+        </div>
+{% endblock %}
+     

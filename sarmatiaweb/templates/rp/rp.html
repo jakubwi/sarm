@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+        <div class="card shadow-sm">
+          <div class="card-body">
+
+            <br/>
+                    <div class="alert alert-danger" role="alert">
+                      {{ wymagania.text | linebreaks }}
+                    </div>
+                    {% if user.is_staff %}
+                    <p class="text-right">
+                    <a class="btn btn-danger btn-sm" href="{% url 'rp_wymagania' wymagania.pk %}" role="button">Edytuj</a>
+                    </p>
+                    {% endif %}
+
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-dark">
+                                <p class="text-right">
+                                  <a href="{% url 'rp_historia' %}" class="btn btn-secondary btn-sm">Historia</a>
+                                </p>
+                                
+                            </h5>
+                            <hr/>
+                            
+                            <table class="table table-borderless table-sm table-striped">
+                                <thead>
+                                <tr>
+                                    {% if request.user.is_staff %}
+                                    <th scope="col" class='text-center'>Moderacja</th>
+                                    {% endif %}
+                                    <th scope="col" class='text-center'>Event</th>
+                                    <th scope="col" class='text-center'>Ilość miejsc</th>
+                                    <th scope="col" class='text-center'>Data</th>
+                                    <th scope="col" class='text-center'>Status</th>
+                                    <th scope="col" class='text-center'>Tank</th>
+                                    <th scope="col" class='text-center'>Heal</th>
+                                    <th scope="col" class='text-center'>DPS</th>
+                                    <th scope="col" class='text-center'>Suma</th>
+                                    <th scope="col" class='text-center'>Zapisz</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for object in object_list %}
+                                {% if not object.status == 3 %}
+                                    <div class="list-group">
+                                        <tr>
+                                        {% if request.user.is_staff %}
+                                        <td class='text-center'>
+                                        <a href="{% url 'rp_event_update' object.pk %}" class="badge badge-light">Edytuj</a>
+                                        </td>
+                                        {% endif %}
+                                        <td class='text-center'><a class='text-dark' href="{% url 'rp_event_detail' object.pk %}"><u>{{ object.nazwa }}</u></a></td>
+                                        <td class='text-center'>{{ object.miejsca }}</td>
+                                        <td class='text-center'>{{object.kiedy_dzien|date:'l'}}, {{ object.kiedy_dzien|date:'d.m' }} <strong>{{ object.kiedy_godzina }}</strong></td>
+                                        <td class='text-center'>
+                                            {% if object.usuniety %}
+                                            USUNIĘTY
+                                          {% else %}
+                                              {% if object.status == 1 %}
+                                              <span class='text-success'><strong>Zapisy otwarte</strong></span>
+                                              {% elif object.status == 2 %}
+                                              <span class='text-info'><strong>Zamrożony</strong></span>
+                                              {% else %}
+                                                Zakończony
+                                              {% endif %}
+                                          {% endif %}
+                                        </td>
+                                        {% for key,value in object_list.items %}
+                                        {% if key.status != 3 %}
+                                          {% if key == object %}
+                                            <td class='text-center'>{{value.0}}</td>
+                                            <td class='text-center'>{{value.1}}</td>
+                                            <td class='text-center'>{{value.2}}</td>
+                                            <td class='text-center'>{{value.3}}</td>
+                                          {% endif %}
+                                        {% endif %}
+                                        {% endfor %}
+                                        <td class='text-center'>#</td>
+
+                                        </tr>
+                                {% endif %}       
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <p class="card-text"><small class="text-muted">Kliknij nazwę eventu aby zobaczyć szczegóły</small></p>
+                            {% if user.is_staff %}
+                            <p class="text-right">
+                            <a class="btn btn-danger btn-sm" href="{% url 'rp_event_create' %}" role="button">Dodaj event</a>
+                            </p>
+                            {% endif %}
+                            <a href="{% url 'rp_historia' %}" class="btn btn-secondary btn-sm">Wszystkie</a>
+                            <a href="{% url 'rp_historia' %}" class="btn btn-secondary btn-sm">Zapisz</a>
+                        </div>
+                    </div>
+            
+
+
+    
+          </div>
+        </div>
+        <br/>
+{% endblock %}
+     

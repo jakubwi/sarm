@@ -1,0 +1,597 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h3 class='text-center text-danger'><strong>{{event.nazwa}}</strong></h3>
+        <h5 class='text-center'>
+            {{event.kiedy_dzien|date:'l'}}, {{event.kiedy_dzien}} {{event.kiedy_godzina}}
+        </h5>
+        <p class='text-center'><small class="text-muted">{{ event.opis }}</small></p>
+
+        <div class="row">
+            <div class="col-sm-6">
+            <div class="card">
+            <h5 class="card-header">Raid / Status:
+                {% if event.usuniety %}
+                <span class='text-danger'><strong>Usunięty</strong></span>
+                {% else %}
+                    {% if event.status == 1 %}
+                        <span class='text-success'><strong>Zapisy otwarte</strong></span>
+                    {% elif event.status == 2 %}
+                        <span class='text-info'><strong>Zamrożony</strong></span>
+                    {% else %}
+                        <span class='text-secondary'><strong>Zakończony</strong></span>
+                    {% endif %}
+                {% endif %}
+            </h5>
+
+            <div class="card-body">
+                        Zatwierdzone: {{ wybrani.count }}<hr/>
+                        Oczekujące: {{ zapisani.count }}<hr/>
+                        Anulowane: {{ anulowani.count }}<hr/>
+                        Łącznie: {{ suma_bez_anulowanych }}({{suma}})
+            </div>
+            </div>
+            </div>
+            
+            <div class="col-sm-6">
+            <div class="card">
+                <h5 class="card-header">Zapisy / Status: 
+                    {% if not user_zapisany %} 
+                    <span class='text-danger'>Niezapisany</span> 
+                    {% elif user_zapisany and not user_anulowany and not user_wybrany %} 
+                    <span class='text-success'>Zapisany</span> 
+                    {% elif user_zapisany and user_anulowany %}
+                    <span class='text-secondary'>Zapis anulowany</span>
+                    {% elif user_zapisany and user_wybrany %} 
+                    <span class='text-info'><strong>Wybrany do składu</strong></span>
+                    {% endif %}</h5>
+                <div class="card-body">
+                    {% if user_zapisany and user_wybrany or event.status == 2 or event.status == 3 %}
+                    <p class='text-center'>Nie możesz już modifikować zapisu.</p>
+                    {% else %}
+                        <form action="" method="POST">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            {% if not user_zapisany %} 
+                            <input class="btn btn-success" type="submit" value="Zapisz">
+                            {% elif user_zapisany and not user_anulowany and not user_wybrany %} 
+                            <input class="btn btn-success" type="submit" value="Edytuj">
+                            {% elif user_zapisany and user_anulowany %}
+                            <input class="btn btn-success" type="submit" value="Edytuj">
+                            {% elif user_zapisany and user_wybrany %} 
+                            {% endif %}
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <br/>
+        {% if user.is_staff %}
+        <div class="card">
+                <h5 class="card-header">Moderacja:</h5>
+                <div class="card-body">
+                    <h3 class='text-dark'>Legenda gotowości:</h3>
+                    <span class="badge badge-success">3</span> - "Zależy na raidzie" <br/>
+                    <span class="badge badge-info">2</span> - "Może iść, może nie iść" <br/>
+                    <span class="badge badge-warning">1</span> - "Pójdzie wyłącznie jeśli będzie potrzebny" <br/>
+                    <br/>
+                    <a href="{% url 'rp_event_wybierz' event.pk %}" class="btn btn-danger">Wybierz skład</a>
+                </div>
+        </div>
+        <br/>
+        {% endif %}
+        {% if not wybrani %}
+        {% elif wybrani %}
+        <div class="card">
+            <div class="card-body">
+                
+                <h5 class="card-title text-danger"><strong>Wybrany skład:</strong></h5>
+                    <table class="table table-sm table-striped">
+                        <thead class='thead-dark'>
+                            <tr>
+                                <th scope="col" colspan="{% if request.user.is_staff %}6{% else %}5{% endif %}" class='text-center'>Tank</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for object in wybrani %}
+                            {% if object.czym.mainspec.name == 'Tank' %}
+                            <tr>
+                                    {% if request.user.is_staff %}
+                                    <td class='text-center'>
+                                        {% if object.gotowosc == '3' %}
+                                        <span class="badge badge-success">{{ object.gotowosc }}</span>
+                                        {% elif object.gotowosc == '2' %}
+                                        <span class="badge badge-info">{{ object.gotowosc }}</span>
+                                        {% elif object.gotowosc == '1' %}
+                                        <span class="badge badge-warning">{{ object.gotowosc }}</span>
+                                        {% endif %}
+                                        </td>
+                                    {% endif %}
+                                        <td class='text-center'>{{ object.czym }}</td>
+                                        <td class='text-center'><img src="{{ MEDIA_URL }}{{ object.czym.klasa.icon }}" class='rounded' height="25"/>|{{ object.czym.klasa }}</td>
+                                        <td class='text-center'>Mainspec: <img src="/static/rekrutacja/tank.png"></td>
+                                        <td class='text-center'>Offspec: {% if object.czym.offspec.name == 'Tank' %}
+                                                <img src="/static/rekrutacja/tank.png">
+                                            {% elif object.czym.offspec.name == 'Heal' %}
+                                            <img src="/static/rekrutacja/heal.png">
+                                            {% elif object.czym.offspec.name == 'Ranged' %}
+                                            <img src="/static/rekrutacja/ranged.png">
+                                            {% elif object.czym.offspec.name == 'Melee' %}
+                                            <img src="/static/rekrutacja/melee.png">
+                                            {% endif %}
+                                        </td>
+                                        <td class='text-center'>Komentarz: {% if object.komentarz %}{{ object.komentarz }}{% else %}-{% endif %}</td>
+                            </tr>
+                                {% endif %}
+                                
+                                {% empty %}
+                                <td class='text-center'>Brak</td>
+                                {% endfor %}
+                        </tbody>
+                    </table>
+                            <table class="table table-sm table-striped">
+                                    <thead class='thead-dark'>
+                                            <tr>
+                                                <th scope="col" colspan="{% if request.user.is_staff %}6{% else %}5{% endif %}" class='text-center'>Heal</th>
+                                            </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for object in wybrani %}
+                                    {% if object.czym.mainspec.name == 'Heal' %}
+                                        <tr>
+                                                {% if request.user.is_staff %}
+                                                <td class='text-center'>
+                                                    {% if object.gotowosc == '3' %}
+                                                    <span class="badge badge-success">{{ object.gotowosc }}</span>
+                                                    {% elif object.gotowosc == '2' %}
+                                                    <span class="badge badge-info">{{ object.gotowosc }}</span>
+                                                    {% elif object.gotowosc == '1' %}
+                                                    <span class="badge badge-warning">{{ object.gotowosc }}</span>
+                                                    {% endif %}
+                                                    </td>
+                                                {% endif %}
+                                            <td class='text-center'>{{ object.czym }}</td>
+                                            <td class='text-center'><img src="{{ MEDIA_URL }}{{ object.czym.klasa.icon }}" class='rounded' height="25"/>|{{ object.czym.klasa }}</td>
+                                            <td class='text-center'>Mainspec: <img src="/static/rekrutacja/heal.png"></td>
+                                            <td class='text-center'>Offspec: {% if object.czym.offspec.name == 'Tank' %}
+                                                    <img src="/static/rekrutacja/tank.png">
+                                                {% elif object.czym.offspec.name == 'Heal' %}
+                                                <img src="/static/rekrutacja/heal.png">
+                                                {% elif object.czym.offspec.name == 'Ranged' %}
+                                                <img src="/static/rekrutacja/ranged.png">
+                                                {% elif object.czym.offspec.name == 'Melee' %}
+                                                <img src="/static/rekrutacja/melee.png">
+                                                {% endif %}
+                                            </td>
+                                            <td class='text-center'>Komentarz: {% if object.komentarz %}{{ object.komentarz }}{% else %}-{% endif %}</td>
+                                        </tr>
+                                    {% endif %}
+                                    {% empty %}
+                                    <td class='text-center'>Brak</td>
+                                    {% endfor %}
+                                    </tbody>
+                            </table>
+                            <table class="table table-sm table-striped">
+                                    <thead class='thead-dark'>
+                                            <tr>
+                                                <th scope="col" colspan="{% if request.user.is_staff %}6{% else %}5{% endif %}" class='text-center'>Ranged</th>
+                                            </tr>
+                                    </thead>
+                                        <tbody>
+                                        {% for object in wybrani %}
+                                        {% if object.czym.mainspec.name == 'Ranged' %}
+                                            <div class="list-group">
+                                                <tr>
+                                                        {% if request.user.is_staff %}
+                                                        <td class='text-center'>
+                                                            {% if object.gotowosc == '3' %}
+                                                            <span class="badge badge-success">{{ object.gotowosc }}</span>
+                                                            {% elif object.gotowosc == '2' %}
+                                                            <span class="badge badge-info">{{ object.gotowosc }}</span>
+                                                            {% elif object.gotowosc == '1' %}
+                                                            <span class="badge badge-warning">{{ object.gotowosc }}</span>
+                                                            {% endif %}
+                                                            </td>
+                                                        {% endif %}
+                                                <td class='text-center'>{{ object.czym }}</td>
+                                                <td class='text-center'><img src="{{ MEDIA_URL }}{{ object.czym.klasa.icon }}" class='rounded' height="25"/>|{{ object.czym.klasa }}</td>
+                                                <td class='text-center'>Mainspec: <img src="/static/rekrutacja/ranged.png"></td>
+                                                <td class='text-center'>Offspec: {% if object.czym.offspec.name == 'Tank' %}
+                                                    <img src="/static/rekrutacja/tank.png">
+                                                {% elif object.czym.offspec.name == 'Heal' %}
+                                                <img src="/static/rekrutacja/heal.png">
+                                                {% elif object.czym.offspec.name == 'Ranged' %}
+                                                <img src="/static/rekrutacja/ranged.png">
+                                                {% elif object.czym.offspec.name == 'Melee' %}
+                                                <img src="/static/rekrutacja/melee.png">
+                                                {% endif %}
+                                                </td>
+                                                <td class='text-center'>Komentarz: {% if object.komentarz %}{{ object.komentarz }}{% else %}-{% endif %}</td>
+                                                </tr>
+                                        {% endif %}
+                                        {% empty %}
+                                        <td class='text-center'>Brak</td>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <table class="table table-sm table-striped">
+                                            <thead class='thead-dark'>
+                                                    <tr>
+                                                        <th scope="col" colspan="{% if request.user.is_staff %}6{% else %}5{% endif %}" class='text-center'>Melee</th>
+                                                    </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for object in wybrani %}
+                                            {% if object.czym.mainspec.name == 'Melee' %}
+                                                <div class="list-group">
+                                                    <tr>
+                                                            {% if request.user.is_staff %}
+                                                            <td class='text-center'>
+                                                                {% if object.gotowosc == '3' %}
+                                                                <span class="badge badge-success">{{ object.gotowosc }}</span>
+                                                                {% elif object.gotowosc == '2' %}
+                                                                <span class="badge badge-info">{{ object.gotowosc }}</span>
+                                                                {% elif object.gotowosc == '1' %}
+                                                                <span class="badge badge-warning">{{ object.gotowosc }}</span>
+                                                                {% endif %}
+                                                                </td>
+                                                            {% endif %}
+                                                    <td class='text-center'>{{ object.czym }}</td>
+                                                    <td class='text-center'><img src="{{ MEDIA_URL }}{{ object.czym.klasa.icon }}" class='rounded' height="25"/>|{{ object.czym.klasa }}</td>
+                                                    <td class='text-center'>Mainspec: <img src="/static/rekrutacja/melee.png"></td>
+                                            <td class='text-center'>Offspec: {% if object.czym.offspec.name == 'Tank' %}
+                                                    <img src="/static/rekrutacja/tank.png">
+                                                {% elif object.czym.offspec.name == 'Heal' %}
+                                                <img src="/static/rekrutacja/heal.png">
+                                                {% elif object.czym.offspec.name == 'Ranged' %}
+                                                <img src="/static/rekrutacja/ranged.png">
+                                                {% elif object.czym.offspec.name == 'Melee' %}
+                                                <img src="/static/rekrutacja/melee.png">
+                                                {% endif %}
+                                            </td>
+                                            <td class='text-center'>Komentarz: {% if object.komentarz %}{{ object.komentarz }}{% else %}-{% endif %}</td>
+                                                    </tr>
+                                            {% endif %}
+                                            {% empty %}
+                                            <td class='text-center'>Brak</td>
+                                            {% endfor %}
+                                            </tbody>
+                            </table>
+                            <p class="card-text"><small class="text-muted"></small></p>
+  
+                        </div>
+                    </div>
+                    <br/>
+                {% endif %}
+                    <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-danger"><strong>Oczekują:</strong></h5>
+                    
+                    
+                    
+                                <table class="table table-sm table-striped">
+                                    <thead class='thead-dark'>
+                                        <tr>
+                                            <th scope="col" colspan="{% if request.user.is_staff %}6{% else %}5{% endif %}" class='text-center'>Tank</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for object in zapisani %}
+                                    {% if object.czym.mainspec.name == 'Tank' %}
+                                        <tr>
+                                            {% if request.user.is_staff %}
+                                            <td class='text-center'>
+                                                {% if object.gotowosc == '3' %}
+                                                <span class="badge badge-success">{{ object.gotowosc }}</span>
+                                                {% elif object.gotowosc == '2' %}
+                                                <span class="badge badge-info">{{ object.gotowosc }}</span>
+                                                {% elif object.gotowosc == '1' %}
+                                                <span class="badge badge-warning">{{ object.gotowosc }}</span>
+                                                {% endif %}
+                                                </td>
+                                            {% endif %}
+                                            <td class='text-center'>{{ object.czym }}</td>
+                                            <td class='text-center'><img src="{{ MEDIA_URL }}{{ object.czym.klasa.icon }}" class='rounded' height="25"/>|{{ object.czym.klasa }}</td>
+                                            <td class='text-center'>Mainspec: <img src="/static/rekrutacja/tank.png"></td>
+                                            <td class='text-center'>Offspec: {% if object.czym.offspec.name == 'Tank' %}
+                                                    <img src="/static/rekrutacja/tank.png">
+                                                {% elif object.czym.offspec.name == 'Heal' %}
+                                                <img src="/static/rekrutacja/heal.png">
+                                                {% elif object.czym.offspec.name == 'Ranged' %}
+                                                <img src="/static/rekrutacja/ranged.png">
+                                                {% elif object.czym.offspec.name == 'Melee' %}
+                                                <img src="/static/rekrutacja/melee.png">
+                                                {% endif %}
+                                            </td>
+                                            <td class='text-center'>Komentarz: {% if object.komentarz %}{{ object.komentarz }}{% else %}-{% endif %}</td>
+                                        </tr>
+                                    {% endif %}
+                                    {% empty %}
+                                    <td class='text-center'>Brak</td>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <table class="table table-sm table-striped">
+                                        <thead class='thead-dark'>
+                                                <tr>
+                                                    <th scope="col" colspan="{% if request.user.is_staff %}6{% else %}5{% endif %}" class='text-center'>Heal</th>
+                                                </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for object in zapisani %}
+                                        {% if object.czym.mainspec.name == 'Heal' %}
+                                            <tr>
+                                                    {% if request.user.is_staff %}
+                                                    <td class='text-center'>
+                                                        {% if object.gotowosc == '3' %}
+                                                        <span class="badge badge-success">{{ object.gotowosc }}</span>
+                                                        {% elif object.gotowosc == '2' %}
+                                                        <span class="badge badge-info">{{ object.gotowosc }}</span>
+                                                        {% elif object.gotowosc == '1' %}
+                                                        <span class="badge badge-warning">{{ object.gotowosc }}</span>
+                                                        {% endif %}
+                                                        </td>
+                                                    {% endif %}
+                                                <td class='text-center'>{{ object.czym }}</td>
+                                                <td class='text-center'><img src="{{ MEDIA_URL }}{{ object.czym.klasa.icon }}" class='rounded' height="25"/>|{{ object.czym.klasa }}</td>
+                                                <td class='text-center'>Mainspec: <img src="/static/rekrutacja/heal.png"></td>
+                                                <td class='text-center'>Offspec: {% if object.czym.offspec.name == 'Tank' %}
+                                                    <img src="/static/rekrutacja/tank.png">
+                                                    {% elif object.czym.offspec.name == 'Heal' %}
+                                                    <img src="/static/rekrutacja/heal.png">
+                                                    {% elif object.czym.offspec.name == 'Ranged' %}
+                                                    <img src="/static/rekrutacja/ranged.png">
+                                                    {% elif object.czym.offspec.name == 'Melee' %}
+                                                    <img src="/static/rekrutacja/melee.png">
+                                                    {% endif %}
+                                                </td>
+                                                <td class='text-center'>Komentarz: {% if object.komentarz %}{{ object.komentarz }}{% else %}-{% endif %}</td>
+                                            </tr>
+                                        {% endif %}
+                                        {% empty %}
+                                        <td class='text-center'>Brak</td>
+                                        {% endfor %}
+                                        </tbody>
+                                </table>
+                                <table class="table table-sm table-striped">
+                                        <thead class='thead-dark'>
+                                                <tr>
+                                                    <th scope="col" colspan="{% if request.user.is_staff %}6{% else %}5{% endif %}" class='text-center'>Ranged</th>
+                                                </tr>
+                                        </thead>
+                                            <tbody>
+                                            {% for object in zapisani %}
+                                            {% if object.czym.mainspec.name == 'Ranged' %}
+                                                <div class="list-group">
+                                                    <tr>
+                                                            {% if request.user.is_staff %}
+                                                            <td class='text-center'>
+                                                                {% if object.gotowosc == '3' %}
+                                                                <span class="badge badge-success">{{ object.gotowosc }}</span>
+                                                                {% elif object.gotowosc == '2' %}
+                                                                <span class="badge badge-info">{{ object.gotowosc }}</span>
+                                                                {% elif object.gotowosc == '1' %}
+                                                                <span class="badge badge-warning">{{ object.gotowosc }}</span>
+                                                                {% endif %}
+                                                                </td>
+                                                            {% endif %}
+                                                    <td class='text-center'>{{ object.czym }}</td>
+                                                    <td class='text-center'><img src="{{ MEDIA_URL }}{{ object.czym.klasa.icon }}" class='rounded' height="25"/>|{{ object.czym.klasa }}</td>
+                                                    <td class='text-center'>Mainspec: <img src="/static/rekrutacja/ranged.png"></td>
+                                                <td class='text-center'>Offspec: {% if object.czym.offspec.name == 'Tank' %}
+                                                    <img src="/static/rekrutacja/tank.png">
+                                                    {% elif object.czym.offspec.name == 'Heal' %}
+                                                    <img src="/static/rekrutacja/heal.png">
+                                                    {% elif object.czym.offspec.name == 'Ranged' %}
+                                                    <img src="/static/rekrutacja/ranged.png">
+                                                    {% elif object.czym.offspec.name == 'Melee' %}
+                                                    <img src="/static/rekrutacja/melee.png">
+                                                    {% endif %}
+                                                </td>
+                                                <td class='text-center'>Komentarz: {% if object.komentarz %}{{ object.komentarz }}{% else %}-{% endif %}</td>
+                                                    </tr>
+                                            {% endif %}
+                                            {% empty %}
+                                            <td class='text-center'>Brak</td>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        <table class="table table-sm table-striped">
+                                                <thead class='thead-dark'>
+                                                        <tr>
+                                                            <th scope="col" colspan="{% if request.user.is_staff %}6{% else %}5{% endif %}" class='text-center'>Melee</th>
+                                                        </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for object in zapisani %}
+                                                {% if object.czym.mainspec.name == 'Melee' %}
+                                                    <div class="list-group">
+                                                        <tr>
+                                                                {% if request.user.is_staff %}
+                                                                <td class='text-center'>
+                                                                    {% if object.gotowosc == '3' %}
+                                                                    <span class="badge badge-success">{{ object.gotowosc }}</span>
+                                                                    {% elif object.gotowosc == '2' %}
+                                                                    <span class="badge badge-info">{{ object.gotowosc }}</span>
+                                                                    {% elif object.gotowosc == '1' %}
+                                                                    <span class="badge badge-warning">{{ object.gotowosc }}</span>
+                                                                    {% endif %}
+                                                                    </td>
+                                                                {% endif %}
+                                                        <td class='text-center'>{{ object.czym }}</td>
+                                                        <td class='text-center'><img src="{{ MEDIA_URL }}{{ object.czym.klasa.icon }}" class='rounded' height="25"/>|{{ object.czym.klasa }}</td>
+                                                        <td class='text-center'>Mainspec: <img src="/static/rekrutacja/melee.png"></td>
+                                                <td class='text-center'>Offspec: {% if object.czym.offspec.name == 'Tank' %}
+                                                    <img src="/static/rekrutacja/tank.png">
+                                                    {% elif object.czym.offspec.name == 'Heal' %}
+                                                    <img src="/static/rekrutacja/heal.png">
+                                                    {% elif object.czym.offspec.name == 'Ranged' %}
+                                                    <img src="/static/rekrutacja/ranged.png">
+                                                    {% elif object.czym.offspec.name == 'Melee' %}
+                                                    <img src="/static/rekrutacja/melee.png">
+                                                    {% endif %}
+                                                </td>
+                                                <td class='text-center'>Komentarz: {% if object.komentarz %}{{ object.komentarz }}{% else %}-{% endif %}</td>
+                                                        </tr>
+                                                {% endif %}
+                                                {% empty %}
+                                                <td class='text-center'>Brak</td>
+                                                {% endfor %}
+                                                </tbody>
+                                </table>
+                                <p class="card-text"><small class="text-muted"></small></p>
+                                
+                            </div>
+                        </div>
+                    <br/>
+            {% if not anulowani %}
+            {% elif anulowanie %}
+                    <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-danger"><strong>Anulowane zapisy:</strong></h5>
+                                
+                                <table class="table table-sm table-striped">
+                                    <thead class='thead-dark'>
+                                        <tr>
+                                            <th scope="col" colspan="5" class='text-center'>Tank</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for object in anulowani %}
+                                    {% if object.czym.mainspec.name == 'Tank' %}
+                                        <tr>
+                                            <td class='text-center'>{{ object.czym }}</td>
+                                            <td class='text-center'><img src="{{ MEDIA_URL }}{{ object.czym.klasa.icon }}" class='rounded' height="25"/>|{{ object.czym.klasa }}</td>
+                                            <td class='text-center'>Mainspec: <img src="/static/rekrutacja/tank.png"></td>
+                                                <td class='text-center'>Offspec: {% if object.czym.offspec.name == 'Tank' %}
+                                                    <img src="/static/rekrutacja/tank.png">
+                                                    {% elif object.czym.offspec.name == 'Heal' %}
+                                                    <img src="/static/rekrutacja/heal.png">
+                                                    {% elif object.czym.offspec.name == 'Ranged' %}
+                                                    <img src="/static/rekrutacja/ranged.png">
+                                                    {% elif object.czym.offspec.name == 'Melee' %}
+                                                    <img src="/static/rekrutacja/melee.png">
+                                                    {% endif %}
+                                                </td>
+                                                <td class='text-center'>Komentarz: {% if object.komentarz %}{{ object.komentarz }}{% else %}-{% endif %}</td>
+                                        </tr>
+                                    {% endif %}
+                                    {% empty %}
+                                    <td class='text-center'>Brak</td>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <table class="table table-sm table-striped">
+                                        <thead class='thead-dark'>
+                                                <tr>
+                                                    <th scope="col" colspan="5" class='text-center'>Heal</th>
+                                                </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for object in anulowani %}
+                                        {% if object.czym.mainspec.name == 'Heal' %}
+                                            <tr>
+                                                
+                                                <td class='text-center'>{{ object.czym }}</td>
+                                                <td class='text-center'><img src="{{ MEDIA_URL }}{{ object.czym.klasa.icon }}" class='rounded' height="25"/>|{{ object.czym.klasa }}</td>
+                                                <td class='text-center'>Mainspec: <img src="/static/rekrutacja/heal.png"></td>
+                                                <td class='text-center'>Offspec: {% if object.czym.offspec.name == 'Tank' %}
+                                                    <img src="/static/rekrutacja/tank.png">
+                                                    {% elif object.czym.offspec.name == 'Heal' %}
+                                                    <img src="/static/rekrutacja/heal.png">
+                                                    {% elif object.czym.offspec.name == 'Ranged' %}
+                                                    <img src="/static/rekrutacja/ranged.png">
+                                                    {% elif object.czym.offspec.name == 'Melee' %}
+                                                    <img src="/static/rekrutacja/melee.png">
+                                                    {% endif %}
+                                                </td>
+                                                <td class='text-center'>Komentarz: {% if object.komentarz %}{{ object.komentarz }}{% else %}-{% endif %}</td>
+                                            </tr>
+                                        {% endif %}
+                                        {% empty %}
+                                        <td class='text-center'>Brak</td>
+                                        {% endfor %}
+                                        </tbody>
+                                </table>
+                                <table class="table table-sm table-striped">
+                                        <thead class='thead-dark'>
+                                                <tr>
+                                                    <th scope="col" colspan="5" class='text-center'>Ranged</th>
+                                                </tr>
+                                        </thead>
+                                            <tbody>
+                                            {% for object in anulowani %}
+                                            {% if object.czym.mainspec.name == 'Ranged' %}
+                                                <div class="list-group">
+                                                    <tr>
+                                                    <td class='text-center'>{{ object.czym }}</td>
+                                                    <td class='text-center'><img src="{{ MEDIA_URL }}{{ object.czym.klasa.icon }}" class='rounded' height="25"/>|{{ object.czym.klasa }}</td>
+                                                    <td class='text-center'>Mainspec: <img src="/static/rekrutacja/ranged.png"></td>
+                                                <td class='text-center'>Offspec: {% if object.czym.offspec.name == 'Tank' %}
+                                                    <img src="/static/rekrutacja/tank.png">
+                                                    {% elif object.czym.offspec.name == 'Heal' %}
+                                                    <img src="/static/rekrutacja/heal.png">
+                                                    {% elif object.czym.offspec.name == 'Ranged' %}
+                                                    <img src="/static/rekrutacja/ranged.png">
+                                                    {% elif object.czym.offspec.name == 'Melee' %}
+                                                    <img src="/static/rekrutacja/melee.png">
+                                                    {% endif %}
+                                                </td>
+                                                <td class='text-center'>Komentarz: {% if object.komentarz %}{{ object.komentarz }}{% else %}-{% endif %}</td>
+                                                    </tr>
+                                            {% endif %}
+                                            {% empty %}
+                                            <td class='text-center'>Brak</td>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        <table class="table table-sm table-striped">
+                                                <thead class='thead-dark'>
+                                                        <tr>
+                                                            <th scope="col" colspan="5" class='text-center'>Melee</th>
+                                                        </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for object in anulowani %}
+                                                {% if object.czym.mainspec.name == 'Melee' %}
+                                                    <div class="list-group">
+                                                        <tr>
+                                                        <td class='text-center'>{{ object.czym }}</td>
+                                                        <td class='text-center'><img src="{{ MEDIA_URL }}{{ object.czym.klasa.icon }}" class='rounded' height="25"/>|{{ object.czym.klasa }}</td>
+                                                        <td class='text-center'>Mainspec: <img src="/static/rekrutacja/melee.png"></td>
+                                                <td class='text-center'>Offspec: {% if object.czym.offspec.name == 'Tank' %}
+                                                    <img src="/static/rekrutacja/tank.png">
+                                                    {% elif object.czym.offspec.name == 'Heal' %}
+                                                    <img src="/static/rekrutacja/heal.png">
+                                                    {% elif object.czym.offspec.name == 'Ranged' %}
+                                                    <img src="/static/rekrutacja/ranged.png">
+                                                    {% elif object.czym.offspec.name == 'Melee' %}
+                                                    <img src="/static/rekrutacja/melee.png">
+                                                    {% endif %}
+                                                </td>
+                                                <td class='text-center'>Komentarz: {% if object.komentarz %}{{ object.komentarz }}{% else %}-{% endif %}</td>
+                                                        </tr>
+                                                {% endif %}
+                                                {% empty %}
+                                                <td class='text-center'>Brak</td>
+                                                {% endfor %}
+                                                </tbody>
+                                </table>
+                                <p class="card-text"><small class="text-muted"></small></p>
+      
+                            </div>
+                        </div>
+            {% endif %}       
+
+    
+          </div>
+        </div>
+        <br/>
+{% endblock %}
+     

@@ -106,12 +106,6 @@ class RaidDeleteView(LogoutIfNotStaffMixin, DeleteView):
     success_url = reverse_lazy('progress')
 
 ## BOSS
-""" @method_decorator(superuser_required(login_url='login'), name='dispatch', )
-class ModWybierzView(LogoutIfNotStaffMixin, ListView):
-    login_url = 'login'
-    model = CustomUser
-    template_name = 'rejestracja/mod_wybierz.html' """
-
 @method_decorator(staff_member_required, name='dispatch')
 class BossUpdateView(LogoutIfNotStaffMixin, UpdateView):
     login_url = 'login'
@@ -119,10 +113,4 @@ class BossUpdateView(LogoutIfNotStaffMixin, UpdateView):
     template_name = 'progress/progress_boss_update.html'
     success_url = reverse_lazy('home')
     form_class = BossUpdateForm
-
-""" @method_decorator(superuser_required(login_url='login'), name='dispatch')
-class ModListView(LogoutIfNotStaffMixin, ListView):
-    login_url = 'login'
-    model = CustomUser
-    template_name = 'rejestracja/mod_lista.html' """
 
