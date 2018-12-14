@@ -15,6 +15,17 @@ class Wymagania(models.Model):
     def __str__(self):
         return self.text
 
+class EventBlueprint(models.Model):
+    nazwaSzablonu = models.CharField(max_length=50)
+    nazwaEventu = models.CharField(max_length=50)
+    kiedy_godzina = models.TimeField(default=time(20, 00, 00))
+    opis = models.TextField(max_length=500)
+    miejsca = models.PositiveIntegerField(default=30, blank=True, null=True)
+    alty = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return self.nazwaSzablonu
+
 class Event(models.Model):
     nazwa = models.CharField(max_length=50)
     kiedy_dzien = models.DateField()

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block extrahead %}
+{{ form.media }}
+{% endblock %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block content %}
+        <div class="card shadow-sm">
+          <div class="card-body">
+              <h3 class="text-dark text-center">Wybierz szablon lub:</h3>
+              <p class='text-center'>
+              <a href="{% url 'rp_event_blueprint_create' %}" class="btn btn-secondary">Utwórz nowy szablon</a>
+              <a href="{% url 'rp_event_create' %}" class="btn btn-secondary">Utwórz nowy, jednorazowy event</a>
+              </p>
+            <br/>
+            
+            <div class="list-group">
+            {% for szablon in szablony %}
+              <a href="{% url 'rp_event_create_from_blueprint' szablon.pk %}" class="list-group-item list-group-item-action">{{ szablon.nazwaSzablonu }}</a>
+            {% endfor %}
+            </div>
+
+
+
+
+
+          </div>
+        </div>
+{% endblock %}
+     

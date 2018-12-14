@@ -2,11 +2,13 @@ from django.shortcuts import render, redirect, reverse, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
+from django.contrib import messages
 ##
 from rejestracja.models import Rola
-from .models import Wymagania, Event
-from .forms import EventCreateForm, WymaganiaUpdateForm, EventUpdateForm, ZapisNaEventForm, ZapisNaEventUpdateForm, ZapisNaEventPonownieForm
-from .forms import WyborNaEventFormset
+from .models import Wymagania, Event, EventBlueprint, Zapis
+from .forms import EventCreateForm, WymaganiaUpdateForm, EventUpdateForm, ZapisNaEventForm
+from .forms import ZapisNaEventUpdateForm, ZapisNaEventPonownieForm, EventBlueprintCreateForm, EventCreateFromBlueprintForm
+from .forms import WyborNaEventFormset, EventCreateFromBlueprintFormset
 ## login required / is_staff /admin
 from django.contrib.auth.mixins import LoginRequiredMixin, AccessMixin
 from django.contrib.auth.decorators import login_required
@@ -46,42 +48,92 @@ class RpEventCreateView(LogoutIfNotStaffMixin, CreateView):
     form_class = EventCreateForm
     success_url = reverse_lazy('home')
 
-class RpView(LoginRequiredMixin, ListView):
-    template_name = 'rp/rp.html'
-    login_url = 'login'
-    model = Event
-    
-    def get_queryset(self):
-        zapisy = {}
-        for event in Event.objects.all():
-            if event.status != 3:
-                tank = 0
-                heal = 0
-                dps = 0
-                for zapis in event.zapis_set.all():
-                    if zapis.czym.mainspec.name == 'Tank':
-                        tank += 1
-                    elif zapis.czym.mainspec.name == 'Heal':
-                        heal += 1
-                    else:
-                        dps += 1
-                suma = tank + heal + dps
-                zapisy[event] = [tank, heal, dps, suma]
-        queryset = zapisy
-        return queryset
+@staff_member_required(login_url='login')
+def RpEventNewView(request):
+    szablony = EventBlueprint.objects.all()
+    context_dict =  {'szablony': szablony}
+    return render(request, 'rp/rp_event_new.html', context=context_dict)
 
-    def get_context_data(self, **kwargs):
-        context = super(RpView, self).get_context_data(**kwargs)
-        context['wymagania'] = Wymagania.objects.all().first()
-        return context
+@staff_member_required(login_url='login')
+def RpEventCreateFromBlueprintView(request, pk):
+    szablon = EventBlueprint.objects.get(pk=pk)
+    data = [{'nazwa': szablon.nazwaEventu, 
+            'kiedy_godzina': szablon.kiedy_godzina, 
+            'opis': szablon.opis,
+            'miejsca': szablon.miejsca,
+            'alty': szablon.alty},]
+    formset = EventCreateFromBlueprintFormset(form_kwargs={'szablon': szablon},)
+
+    if request.method == 'POST':
+        formset = EventCreateFromBlueprintFormset(request.POST, form_kwargs={'szablon': szablon},)
+        for form in formset:
+            if form.is_valid:
+                form.save()
+        return redirect('rp')
+
+    else:
+        formset = EventCreateFromBlueprintFormset(form_kwargs={'szablon': szablon},)
+
+    context_dict =  {'szablon': szablon,
+                    'formset': formset}
+    return render(request, 'rp/rp_event_create_from_blueprint.html', context=context_dict)
+
+@method_decorator(staff_member_required, name='dispatch')
+class RpEventBlueprintCreateView(LogoutIfNotStaffMixin, CreateView):
+    login_url = 'login'
+    template_name = 'rp/rp_event_blueprint_create.html'
+    model = EventBlueprint
+    form_class = EventBlueprintCreateForm
+    success_url = reverse_lazy('rp')
+
+@login_required(login_url='login')
+def RpView(request):
+    events = Event.objects.all()
+    wymagania = Wymagania.objects.all().first()
+    curr_user = request.user
+    main = curr_user.userpostac_set.get(is_main=True)
+    zapisy = {}
+    for event in Event.objects.all():
+        if event.status != 3:
+            tank = 0
+            heal = 0
+            dps = 0
+            for zapis in event.zapis_set.all():
+                if zapis.czym.mainspec.name == 'Tank':
+                    tank += 1
+                elif zapis.czym.mainspec.name == 'Heal':
+                    heal += 1
+                else:
+                    dps += 1
+            suma = tank + heal + dps
+            zapisy[event] = [tank, heal, dps, suma]
+    
+    if request.method == 'POST':
+        multizapis = request.POST.getlist('multizapis') 
+        for zapis_id in multizapis:
+            try:
+                event = Event.objects.get(id=(int(zapis_id)))
+                czyZapisano = event.zapis_set.get(kto=curr_user)
+                messages.error(request, 'Jesteś już zapisany na: ' + str(event))
+            except Zapis.DoesNotExist:
+                z = Zapis()
+                z.kto = curr_user
+                z.czym = main
+                z.na_co = Event.objects.get(id=int(zapis_id))
+                z.save()           
+                messages.success(request, 'Zapisano na: ' + str(event))
+        return redirect('rp')
+    else:                
+        
+        context_dict = {'wymagania': wymagania,
+                        'zapisy': zapisy,
+                        'events': events,
+                        'curr_user': curr_user,}
+        response = render(request, 'rp/rp.html', context=context_dict)
+        return response
 
 class RpHistoriaView(LoginRequiredMixin, ListView):
     template_name = 'rp/rp_historia.html'
-    login_url = 'login'
-    model = Event
-
-class RpEventDetailView(LoginRequiredMixin, DetailView):
-    template_name = 'rp/rp_event_detail.html'
     login_url = 'login'
     model = Event
 

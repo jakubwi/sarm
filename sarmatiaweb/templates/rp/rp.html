@@ -1,12 +1,18 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
+{% load custom_tags %}
+
 
 {% block content %}
+
+
+
         <div class="card shadow-sm">
           <div class="card-body">
 
             <br/>
+           
                     <div class="alert alert-danger" role="alert">
                       {{ wymagania.text | linebreaks }}
                     </div>
@@ -24,8 +30,21 @@
                                 </p>
                                 
                             </h5>
+
                             <hr/>
-                            
+                             {% if messages %}
+                              {% for message in messages %}
+                                  {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                                  <div class="alert alert-warning" role="alert">
+                                  <p class="{{ message.tags }}">{{ message }}</p>
+                                  </div>
+                                  {% else %}
+                                  <div class="alert alert-info" role="alert">
+                                  <p class="{{ message.tags }}">{{ message }}</p>
+                                  </div>
+                                  {% endif %}
+                              {% endfor %}
+                              {% endif %}
                             <table class="table table-borderless table-sm table-striped">
                                 <thead>
                                 <tr>
@@ -33,6 +52,7 @@
                                     <th scope="col" class='text-center'>Moderacja</th>
                                     {% endif %}
                                     <th scope="col" class='text-center'>Event</th>
+                                    <th scope="col" class='text-center'>Zapisano</th>
                                     <th scope="col" class='text-center'>Ilość miejsc</th>
                                     <th scope="col" class='text-center'>Data</th>
                                     <th scope="col" class='text-center'>Status</th>
@@ -44,56 +64,82 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% for object in object_list %}
-                                {% if not object.status == 3 %}
-                                    <div class="list-group">
-                                        <tr>
-                                        {% if request.user.is_staff %}
-                                        <td class='text-center'>
-                                        <a href="{% url 'rp_event_update' object.pk %}" class="badge badge-light">Edytuj</a>
-                                        </td>
-                                        {% endif %}
-                                        <td class='text-center'><a class='text-dark' href="{% url 'rp_event_detail' object.pk %}"><u>{{ object.nazwa }}</u></a></td>
-                                        <td class='text-center'>{{ object.miejsca }}</td>
-                                        <td class='text-center'>{{object.kiedy_dzien|date:'l'}}, {{ object.kiedy_dzien|date:'d.m' }} <strong>{{ object.kiedy_godzina }}</strong></td>
-                                        <td class='text-center'>
-                                            {% if object.usuniety %}
-                                            USUNIĘTY
-                                          {% else %}
-                                              {% if object.status == 1 %}
-                                              <span class='text-success'><strong>Zapisy otwarte</strong></span>
-                                              {% elif object.status == 2 %}
-                                              <span class='text-info'><strong>Zamrożony</strong></span>
-                                              {% else %}
-                                                Zakończony
-                                              {% endif %}
+                              
+                                    
+                                <form action="" method="POST">
+                                  {% for object in events %}
+                                  {% if not object.status == 3 %}
+                                      <div class="list-group">
+                                          <tr>
+                                          {% if request.user.is_staff %}
+                                          <td class='text-center'>
+                                          <a href="{% url 'rp_event_update' object.pk %}" class="badge badge-light">Edytuj</a>
+                                          </td>
                                           {% endif %}
-                                        </td>
-                                        {% for key,value in object_list.items %}
-                                        {% if key.status != 3 %}
-                                          {% if key == object %}
-                                            <td class='text-center'>{{value.0}}</td>
-                                            <td class='text-center'>{{value.1}}</td>
-                                            <td class='text-center'>{{value.2}}</td>
-                                            <td class='text-center'>{{value.3}}</td>
+                                          <td class='text-center'><a class='text-dark' href="{% url 'rp_event_detail' object.pk %}"><u>{{ object.nazwa }}</u></a></td>
+                                          <td class='text-center'>
+                                            {% check_zapis object request.user as check_zapis %}
+                                            {% if check_zapis %}
+                                            <img src="/static/img/yes.png" class='rounded' height="15">
+                                            {% elif not check_zapis %}
+                                            <img src="/static/img/no.png" class='rounded' height="20">
+                                            {% endif %}
+                                          </td>
+                                          <td class='text-center'>{{ object.miejsca }}</td>
+                                          <td class='text-center'>{{object.kiedy_dzien|date:'l'}}, {{ object.kiedy_dzien|date:'d.m' }} <strong>{{ object.kiedy_godzina }}</strong></td>
+                                          <td class='text-center'>
+                                              {% if object.usuniety %}
+                                              USUNIĘTY
+                                            {% else %}
+                                                {% if object.status == 1 %}
+                                                <span class='text-success'><strong>Zapisy otwarte</strong></span>
+                                                {% elif object.status == 2 %}
+                                                <span class='text-info'><strong>Zamrożony</strong></span>
+                                                {% else %}
+                                                  Zakończony
+                                                {% endif %}
+                                            {% endif %}
+                                          </td>
+                                          {% for key,value in zapisy.items %}
+                                          {% if key.status != 3 %}
+                                            {% if key == object %}
+                                              <td class='text-center'>{{value.0}}</td>
+                                              <td class='text-center'>{{value.1}}</td>
+                                              <td class='text-center'>{{value.2}}</td>
+                                              <td class='text-center'>{{value.3}}</td>
+                                            {% endif %}
                                           {% endif %}
-                                        {% endif %}
-                                        {% endfor %}
-                                        <td class='text-center'>#</td>
-
-                                        </tr>
-                                {% endif %}       
-                                {% endfor %}
-                                </tbody>
+                                          {% endfor %}
+                                          
+                                          {% csrf_token %}
+                                          
+                                          <td class='text-center'>
+                                            <input type="checkbox" class="checkItem" name="multizapis" value="{{ object.id }}"/> 
+                                          </td>
+                                          
+                                          </tr>
+                                  {% endif %}       
+                                  {% endfor %}
+                              
+                              <br/>
+                              <br/>
+                              
+                              
+                              </tbody>
                             </table>
-                            <p class="card-text"><small class="text-muted">Kliknij nazwę eventu aby zobaczyć szczegóły</small></p>
+                            <p class="card-text"><small class="text-muted">Kliknij nazwę eventu aby zobaczyć szczegóły<br/>
+                            Zaznacz pole zapisu przy wybranym evencie (lub kliknij przycisk 'Wszystkie'), a następnie przycisk 'Zapisz' aby zapisać na zaznaczone eventy</small></p>
                             {% if user.is_staff %}
                             <p class="text-right">
-                            <a class="btn btn-danger btn-sm" href="{% url 'rp_event_create' %}" role="button">Dodaj event</a>
+                            <a class="btn btn-danger btn-sm" href="{% url 'rp_event_new' %}" role="button">Dodaj event</a>
                             </p>
                             {% endif %}
-                            <a href="{% url 'rp_historia' %}" class="btn btn-secondary btn-sm">Wszystkie</a>
-                            <a href="{% url 'rp_historia' %}" class="btn btn-secondary btn-sm">Zapisz</a>
+                            <input class="btn btn-secondary btn-sm" type="submit" value="Zapisz">
+                            <input type="button" class="btn btn-secondary btn-sm" value="Wszystkie" id="slectAll"/>
+
+
+
+                          </form>
                         </div>
                     </div>
             
@@ -104,4 +150,3 @@
         </div>
         <br/>
 {% endblock %}
-     

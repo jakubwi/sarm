@@ -66,7 +66,7 @@
                     {{ formsetTankWybrani.management_form }}
                     <thead class='thead-dark'>
                     <tr>
-                        <th scope="col" colspan="7" class='text-center'>Tanki</th>
+                        <th scope="col" colspan="8" class='text-center'>Tanki</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -107,6 +107,7 @@
                                         {% endif %}
                             </td>
                             <td class='text-center'>Komentarz: {% if zapis.komentarz %}{{ zapis.komentarz }}{% else %}-{% endif %}</td>
+                            <td class='text-center'>Data zapisu: {{ zapis.kiedy }}</td>
                         </tr>
                         {% endif %}
                         {% endfor %}
@@ -118,7 +119,7 @@
                         {{ formsetHealWybrani.management_form }}
                         <thead class='thead-dark'>
                         <tr>
-                            <th scope="col" colspan="7" class='text-center'>Healerzy</th>
+                            <th scope="col" colspan="8" class='text-center'>Healerzy</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -159,6 +160,7 @@
                                             {% endif %}
                                 </td>
                                 <td class='text-center'>Komentarz: {% if zapis.komentarz %}{{ zapis.komentarz }}{% else %}-{% endif %}</td>
+                                <td class='text-center'>Data zapisu: {{ zapis.kiedy }}</td>
                             </tr>
                             {% endif %}
                             {% endfor %}
@@ -170,7 +172,7 @@
                         {{ formsetRangedWybrani.management_form }}
                         <thead class='thead-dark'>
                         <tr>
-                            <th scope="col" colspan="7" class='text-center'>Ranged</th>
+                            <th scope="col" colspan="8" class='text-center'>Ranged</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -211,6 +213,7 @@
                                             {% endif %}
                                 </td>
                                 <td class='text-center'>Komentarz: {% if zapis.komentarz %}{{ zapis.komentarz }}{% else %}-{% endif %}</td>
+                                <td class='text-center'>Data zapisu: {{ zapis.kiedy }}</td>
                             </tr>
                             {% endif %}
                             {% endfor %}
@@ -222,7 +225,7 @@
                                 {{ formsetMeleeWybrani.management_form }}
                                 <thead class='thead-dark'>
                                 <tr>
-                                    <th scope="col" colspan="7" class='text-center'>Melee</th>
+                                    <th scope="col" colspan="8" class='text-center'>Melee</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -263,6 +266,7 @@
                                                     {% endif %}
                                         </td>
                                         <td class='text-center'>Komentarz: {% if zapis.komentarz %}{{ zapis.komentarz }}{% else %}-{% endif %}</td>
+                                        <td class='text-center'>Data zapisu: {{ zapis.kiedy }}</td>
                                     </tr>
                                     {% endif %}
                                     {% endfor %}
@@ -286,7 +290,7 @@
                         {{ formsetTank.management_form }}
                         <thead class='thead-dark'>
                         <tr>
-                            <th scope="col" colspan="7" class='text-center'>Tanki</th>
+                            <th scope="col" colspan="8" class='text-center'>Tanki</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -327,6 +331,7 @@
                                             {% endif %}
                                 </td>
                                 <td class='text-center'>Komentarz: {% if zapis.komentarz %}{{ zapis.komentarz }}{% else %}-{% endif %}</td>
+                                <td class='text-center'>Data zapisu: {{ zapis.kiedy }}</td>
                             </tr>
                             {% endif %}
                             
@@ -339,7 +344,7 @@
                             {{ formsetHeal.management_form }}
                             <thead class='thead-dark'>
                             <tr>
-                                <th scope="col" colspan="7" class='text-center'>Healerzy</th>
+                                <th scope="col" colspan="8" class='text-center'>Healerzy</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -380,6 +385,7 @@
                                                 {% endif %}
                                     </td>
                                     <td class='text-center'>Komentarz: {% if zapis.komentarz %}{{ zapis.komentarz }}{% else %}-{% endif %}</td>
+                                    <td class='text-center'>Data zapisu: {{ zapis.kiedy }}</td>
                                 </tr>
                                 {% endif %}
                                 {% endfor %}
@@ -391,7 +397,7 @@
                             {{ formsetRanged.management_form }}
                             <thead class='thead-dark'>
                             <tr>
-                                <th scope="col" colspan="7" class='text-center'>Ranged</th>
+                                <th scope="col" colspan="8" class='text-center'>Ranged</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -432,6 +438,7 @@
                                                 {% endif %}
                                     </td>
                                     <td class='text-center'>Komentarz: {% if zapis.komentarz %}{{ zapis.komentarz }}{% else %}-{% endif %}</td>
+                                    <td class='text-center'>Data zapisu: {{ zapis.kiedy }}</td>
                                 </tr>
                                 {% endif %}
                                 {% endfor %}
@@ -443,7 +450,7 @@
                                     {{ formsetMelee.management_form }}
                                     <thead class='thead-dark'>
                                     <tr>
-                                        <th scope="col" colspan="7" class='text-center'>Melee</th>
+                                        <th scope="col" colspan="8" class='text-center'>Melee</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -484,6 +491,7 @@
                                                         {% endif %}
                                             </td>
                                             <td class='text-center'>Komentarz: {% if zapis.komentarz %}{{ zapis.komentarz }}{% else %}-{% endif %}</td>
+                                            <td class='text-center'>Data zapisu: {{ zapis.kiedy }}</td>
                                         </tr>
                                         {% endif %}
                                         {% endfor %}

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block extrahead %}
+{{ form.media }}
+{% endblock %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block content %}
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h3 class="mb-0">
+            <p class="text-center">
+              <h3 class="text-dark text-center">Nowy event z szablonu:</h3>
+              <div class="card">
+                <div class="card-header">
+                  Szablon: {{szablon.nazwaSzablonu}}
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">Nazwa eventu: {{szablon.nazwaEventu}}</li>
+                  <li class="list-group-item">Godzina: {{szablon.kiedy_godzina}}</li>
+                  <li class="list-group-item">Opis: {{szablon.opis}}</li>
+                  <li class="list-group-item">Ilość miejsc: {{szablon.miejsca}}</li>
+                  <li class="list-group-item">Alty: {% if szablon.alty %}TAK{% else %}NIE{% endif %}</li>
+                </ul>
+              </div>
+              
+              
+            </p>
+            </h3>
+
+            <br/>
+            
+            <script type="text/html" id="form-template">
+              <div id="form-__prefix__" class="form-inline">
+                  Wybierz dzień: <br/>
+                  {{formset.empty_form|crispy}}
+              </div>
+            </script>
+
+              <form action="" method="post" >
+                {% csrf_token %}
+                {{ formset.management_form }}
+                <div id="form-form-container">
+                    {% for form in formset %}
+                        <div id="form-{{ forloop.counter0 }}" class="form-inline">
+                            Wybierz dzień: <br/>
+                            {{form|crispy}}
+                        </div>
+                    {% endfor %}
+                </div>
+                <br/>
+                <a href="#" id="add-item2-button" class="btn btn-info add-item2">Dodaj event</a>
+                <br/>
+                
+                <br/>
+                <input class="btn btn-success" type="submit" value="Zapisz">
+              </form>
+
+
+
+          </div>
+        </div>
+
+
+{% endblock %}
+     
