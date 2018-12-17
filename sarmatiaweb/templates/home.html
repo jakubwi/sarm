@@ -63,18 +63,14 @@
                     {% for raid in aktualny_dodatek.raids.all %}
                         {% if raid.aktualny %}
                         <table class='table'>
-                            <thead>
-                                <th scope="col" class='text-center'>Boss</th>
-                                <th scope="col" class='text-center'>Kill</th>
-                            </thead>
                             {% for boss in raid.bosses.all %}
                                 <tbody>
-                                    <th scope='row'>{{ boss.name }}</th>
+                                    <th scope='row' class='text-center'>{{ boss.name }}</th>
                                     <td class='text-center'>
                                         {% if boss.mythic %}
-                                        <span class="badge badge-danger">MYTHIC</span>
-                                        {% elif boss.heroic %}<span class="badge badge-primary">HEROIC</span>
-                                        {% elif boss.normal %}<span class="badge badge-secondary">NORMAL</span>
+                                        <span class="badge badge-danger">M</span>
+                                        {% elif boss.heroic %}<span class="badge badge-primary">H</span>
+                                        {% elif boss.normal %}<span class="badge badge-secondary">N</span>
                                         {% else %}<span class="badge badge-dark">NIE</span>
                                         {% endif %}
                                         {% if request.user.is_staff %}
@@ -90,24 +86,24 @@
                     {% endfor %}
                         <hr/>
                 <h5 class='text-dark text-center'>{% if aktualny_dodatek.raids.count <= 1 %}<strong>{{poprzedni_dodatek.name}}</strong>{% elif aktualny_dodatek.raids.count > 1 %}<strong>{{aktualny_dodatek.name}}</strong>{% endif %}</h5>
-                    <table class='table'>
+                    <table class='table small'>
                         {% for key, value in object_list.items %}
                         <tbody>
                             {% for raid in aktualny_dodatek.raids.all %}
                             {% if key == raid.name %}
                                 {% if not raid.aktualny %}
                                     {% if value.0 == 'Mythic' %}
-                                    <td>{{key}} </td>
-                                    <td>[{{value.1}}/{{value.2}}] <span class="badge badge-danger"> M </span></td>
+                                    <td class='text-center'>{{key}} </td>
+                                    <td><span class="badge badge-danger"> M </span> [{{value.1}}/{{value.2}}] </td>
                                     {% elif value.0 == 'Heroic' %}
-                                    <td>{{key}} </td>
-                                    <td>[{{value.1}}/{{value.2}}] <span class="badge badge-primary"> H </span></td>
+                                    <td class='text-center'>{{key}} </td>
+                                    <td><span class="badge badge-primary"> H </span> [{{value.1}}/{{value.2}}] </td>
                                     {% elif value.0 == 'Normal' %}
-                                    <td>{{key}} </td>
-                                    <td>[{{value.1}}/{{value.2}}] <span class="badge badge-secondary"> N </span></td>
+                                    <td class='text-center'>{{key}} </td>
+                                    <td><span class="badge badge-secondary"> N </span> [{{value.1}}/{{value.2}}] </td>
                                     {% else %}
-                                    <td>{{key}}</td>
-                                    <td>[{{value.1}}/{{value.2}}] <span class="badge badge-secondary"> X </span></td>
+                                    <td class='text-center'>{{key}}</td>
+                                    <td><span class="badge badge-secondary"> X </span> [{{value.1}}/{{value.2}}] </td>
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -116,17 +112,17 @@
                             {% if key == raid.name %}
                                 {% if not raid.aktualny %}
                                     {% if value.0 == 'Mythic' %}
-                                    <td>{{key}} </td>
-                                    <td>[{{value.1}}/{{value.2}}] <span class="badge badge-danger"> M </span></td>
+                                    <td class='text-center'>{{key}} </td>
+                                    <td><span class="badge badge-danger"> M </span> [{{value.1}}/{{value.2}}] </td>
                                     {% elif value.0 == 'Heroic' %}
-                                    <td>{{key}} </td>
-                                    <td>[{{value.1}}/{{value.2}}] <span class="badge badge-primary"> H </span></td>
+                                    <td class='text-center'>{{key}} </td>
+                                    <td><span class="badge badge-primary"> H </span> [{{value.1}}/{{value.2}}] </td>
                                     {% elif value.0 == 'Normal' %}
-                                    <td>{{key}} </td>
-                                    <td>[{{value.1}}/{{value.2}}] <span class="badge badge-secondary"> N </span></td>
+                                    <td class='text-center'>{{key}} </td>
+                                    <td><span class="badge badge-secondary"> N </span> [{{value.1}}/{{value.2}}] </td>
                                     {% else %}
-                                    <td>{{key}}</td>
-                                    <td>[{{value.1}}/{{value.2}}] <span class="badge badge-secondary"> X </span></td>
+                                    <td class='text-center'>{{key}}</td>
+                                    <td><span class="badge badge-secondary"> X </span> [{{value.1}}/{{value.2}}] </td>
                                     {% endif %}
                                 {% endif %}
                             {% endif %}

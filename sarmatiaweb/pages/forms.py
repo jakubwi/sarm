@@ -1,5 +1,11 @@
 from django.forms import ModelForm, forms, modelformset_factory, HiddenInput
-from pages.models import Rekrutacja, Klasa, Killshot
+from pages.models import Rekrutacja, Klasa, Killshot, Onas
+
+class OnasUpdateForm(ModelForm):
+    class Meta:
+        model = Onas
+        fields = ['text',]
+        labels = {'text': '',}
 
 class KillshotCreateForm(ModelForm):
     class Meta:

@@ -1,6 +1,15 @@
 from django.db import models
 from datetime import datetime
 
+class Onas(models.Model):
+    text = models.TextField(max_length=1024)
+
+    class Meta:
+        verbose_name_plural = 'O nas'
+
+    def __str__(self):
+        return self.text
+
 class Killshot(models.Model):
     boss = models.CharField(max_length=50, unique=True, default='', null=True, blank=True)
     image = models.ImageField(upload_to='killshots', blank=True)

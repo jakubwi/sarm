@@ -65,6 +65,7 @@ class WymaganiaUpdateForm(ModelForm):
         fields = ['text',]
         labels = {'text': '',}
 
+### event tylko main
 class ZapisNaEventForm(ModelForm):
     class Meta:
         model = Zapis
@@ -98,6 +99,47 @@ class ZapisNaEventUpdateForm(ModelForm):
         super(ZapisNaEventUpdateForm, self).__init__(*args, **kwargs)
         self.fields['kto'].required = False
         self.fields['kto'].widget = HiddenInput()
+
+### event, też alty
+class ZapisNaEventAltForm(ModelForm):
+    class Meta:
+        model = Zapis
+        fields = ['kto', 'czym', 'gotowosc', 'komentarz',]
+        labels = {'kto': 'kto', 'czym': 'Wybierz postać' }
+
+    def __init__(self, postacie, *args, **kwargs):
+        postacie = postacie
+        super(ZapisNaEventAltForm, self).__init__(*args, **kwargs)
+        self.fields['kto'].required = False
+        self.fields['kto'].widget = HiddenInput()
+        self.fields['czym'].queryset = postacie
+
+class ZapisNaEventPonownieAltForm(ModelForm):
+    class Meta:
+        model = Zapis
+        fields = ['kto', 'czym', 'gotowosc', 'komentarz', 'anulowany']
+        labels = {'kto': 'kto', 'czym': 'Wybierz postać'}
+
+    def __init__(self, postacie, *args, **kwargs):
+        postacie = postacie
+        super(ZapisNaEventPonownieAltForm, self).__init__(*args, **kwargs)
+        self.fields['kto'].required = False
+        self.fields['kto'].widget = HiddenInput()
+        self.fields['czym'].queryset = postacie
+        self.fields['anulowany'].initial = True
+
+class ZapisNaEventUpdateAltForm(ModelForm):
+    class Meta:
+        model = Zapis
+        fields = ['kto', 'czym', 'gotowosc', 'komentarz', 'anulowany',]
+        labels = {'kto': 'kto', 'czym': 'Wybierz postać', 'anulowany': 'Anuluj zapis'}
+
+    def __init__(self, postacie, *args, **kwargs):
+        postacie = postacie
+        super(ZapisNaEventUpdateAltForm, self).__init__(*args, **kwargs)
+        self.fields['kto'].required = False
+        self.fields['kto'].widget = HiddenInput()
+        self.fields['czym'].queryset = postacie
 
 ### wybieranie do skladu
 class WyborNaEventForm(ModelForm):

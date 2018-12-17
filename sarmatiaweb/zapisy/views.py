@@ -7,6 +7,7 @@ from django.contrib import messages
 from rejestracja.models import Rola
 from .models import Wymagania, Event, EventBlueprint, Zapis
 from .forms import EventCreateForm, WymaganiaUpdateForm, EventUpdateForm, ZapisNaEventForm
+from .forms import ZapisNaEventAltForm, ZapisNaEventPonownieAltForm, ZapisNaEventUpdateAltForm
 from .forms import ZapisNaEventUpdateForm, ZapisNaEventPonownieForm, EventBlueprintCreateForm, EventCreateFromBlueprintForm
 from .forms import WyborNaEventFormset, EventCreateFromBlueprintFormset
 ## login required / is_staff /admin
@@ -16,6 +17,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import user_passes_test
+## pagination 
+from pure_pagination.mixins import PaginationMixin
 
 
 class LogoutIfNotStaffMixin(AccessMixin):
@@ -132,15 +135,18 @@ def RpView(request):
         response = render(request, 'rp/rp.html', context=context_dict)
         return response
 
-class RpHistoriaView(LoginRequiredMixin, ListView):
+class RpHistoriaView(LoginRequiredMixin, PaginationMixin, ListView):
     template_name = 'rp/rp_historia.html'
     login_url = 'login'
     model = Event
+    paginate_by = 25
+    ordering = ['-kiedy_dzien', '-kiedy_godzina',]
 
 @login_required(login_url='login')
 def RpEventDetailView(request, pk):
     curr_user = request.user
     main = curr_user.userpostac_set.get(is_main=True)
+    postacie = curr_user.userpostac_set.all()
     event = Event.objects.get(pk=pk)
     role = Rola.objects.all()
     new_zapis = None
@@ -170,29 +176,52 @@ def RpEventDetailView(request, pk):
 
     if request.method == 'POST':
         if not user_zapisany:
-            form = ZapisNaEventForm(request.POST)
+            if event.alty:
+                form = ZapisNaEventAltForm(postacie, request.POST)
+            elif not event.alty:
+                form = ZapisNaEventForm(request.POST)
         elif user_zapisany and user_anulowany:
-            form = ZapisNaEventPonownieForm(request.POST, instance=user_zapisany[0])
+            if event.alty:
+                form = ZapisNaEventPonownieAltForm(postacie, request.POST, instance=user_zapisany[0])
+            elif not event.alty:
+                form = ZapisNaEventPonownieForm(request.POST, instance=user_zapisany[0])
         elif user_zapisany:
-            form = ZapisNaEventUpdateForm(request.POST, instance=user_zapisany[0])
-        if form.is_valid():
+            if event.alty:
+                form = ZapisNaEventUpdateAltForm(postacie, request.POST, instance=user_zapisany[0])
+            elif not event.alty:
+                form = ZapisNaEventUpdateForm(request.POST, instance=user_zapisany[0])
+        if form.is_valid() and not event.alty:
             new_zapis = form.save(commit=False)
             new_zapis.na_co = event
             new_zapis.kto = request.user
             new_zapis.czym = main
             new_zapis.save()
             return redirect('rp_event_detail', event.pk)
+        elif form.is_valid() and event.alty:
+            new_zapis = form.save(commit=False)
+            new_zapis.na_co = event
+            new_zapis.kto = request.user
+            new_zapis.save()
+            return redirect('rp_event_detail', event.pk)
         else:
             print(form.errors)
     else:                
         if not user_zapisany:
-            form = ZapisNaEventForm()
+            if event.alty:
+                form = ZapisNaEventAltForm(postacie)
+            elif not event.alty:
+                form = ZapisNaEventForm()
         elif user_zapisany and user_anulowany:
-            form = ZapisNaEventPonownieForm(instance=user_zapisany[0])
+            if event.alty:
+                form = ZapisNaEventPonownieAltForm(postacie, instance=user_zapisany[0])
+            elif not event.alty:
+                form = ZapisNaEventPonownieForm(instance=user_zapisany[0])
         elif user_zapisany:
-            form = ZapisNaEventUpdateForm(instance=user_zapisany[0])
-        elif user_zapisany and user_wybrany:
-            form = None
+            if event.alty:
+                form = ZapisNaEventUpdateAltForm(postacie, instance=user_zapisany[0])
+            elif not event.alty:
+                form = ZapisNaEventUpdateForm(instance=user_zapisany[0])
+
         context_dict = {'event': event,
                         'new_zapis': new_zapis,
                         'form': form,
@@ -205,7 +234,8 @@ def RpEventDetailView(request, pk):
                         'user_anulowany': user_anulowany,
                         'user_wybrany': user_wybrany,
                         'suma': suma,
-                        'suma_bez_anulowanych': suma_bez_anulowanych,}
+                        'suma_bez_anulowanych': suma_bez_anulowanych,
+                        'postacie': postacie,}
         response = render(request, 'rp/rp_event_detail.html', context=context_dict)
         return response
 

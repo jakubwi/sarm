@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+        <div class="card shadow-sm">
+          <div class="card-body">
+              <h3 class="text-dark text-center">Edytuj informacje o władzach gildii</h3>
+              <p class='text-center'><small class="text-muted">Pamiętaj, żeby zachować format html dla tabeli!</small></p>
+
+            <br/>
+            <form action="" method="POST">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <input class="btn btn-secondary" type="submit" value="Zapisz">
+            </form>
+
+          </div>
+        </div>
+{% endblock %}
+     

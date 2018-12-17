@@ -3,6 +3,8 @@ from . import views
 
 urlpatterns = [
     path('', views.HomePageView.as_view(), name='home'),
+    path('o-gildii', views.OnasView.as_view(), name='onas'),
+    path('o-gildii/<int:pk>', views.OnasUpdateView.as_view(), name='onas_update'),
     path('rekrutacja', views.RekrutacjaUpdateView, name='rekrutacja_update'),
     path('klasa', views.KlasaListView.as_view(), name='klasa_lista'),
     path('klasa/create', views.KlasaCreateView.as_view(), name='klasa_create'),

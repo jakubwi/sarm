@@ -13,7 +13,7 @@
 
             <br/>
            
-                    <div class="alert alert-danger" role="alert">
+                    <div class="alert alert-info" role="alert">
                       {{ wymagania.text | linebreaks }}
                     </div>
                     {% if user.is_staff %}
@@ -89,12 +89,16 @@
                                           <td class='text-center'>{{object.kiedy_dzien|date:'l'}}, {{ object.kiedy_dzien|date:'d.m' }} <strong>{{ object.kiedy_godzina }}</strong></td>
                                           <td class='text-center'>
                                               {% if object.usuniety %}
-                                              USUNIĘTY
+                                              <span class='text-secondary'><strong>Anulowany</strong></span>
                                             {% else %}
                                                 {% if object.status == 1 %}
                                                 <span class='text-success'><strong>Zapisy otwarte</strong></span>
                                                 {% elif object.status == 2 %}
-                                                <span class='text-info'><strong>Zamrożony</strong></span>
+                                                  {% if object.odblokuj_zapisy %}
+                                                  <span class='text-success'><strong>Zapisy otwarte</strong></span>
+                                                  {% else %}
+                                                  <span class='text-info'><strong>Zamrożony</strong></span>
+                                                  {% endif %}
                                                 {% else %}
                                                   Zakończony
                                                 {% endif %}
@@ -114,7 +118,13 @@
                                           {% csrf_token %}
                                           
                                           <td class='text-center'>
+                                            {% if object.usuniety %}
+                                            
+                                            {% elif not object.odblokuj_zapisy and object.status == 2 %}
+                                            
+                                            {% else %}
                                             <input type="checkbox" class="checkItem" name="multizapis" value="{{ object.id }}"/> 
+                                            {% endif %}
                                           </td>
                                           
                                           </tr>

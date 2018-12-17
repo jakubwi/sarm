@@ -15,6 +15,7 @@ urlpatterns = [
     path('aplikacja', views.AplikacjaView.as_view(), name='aplikacja'),
     path('aplikacja/raid', views.AplikacjaRaidView.as_view(), name='aplikacja_raid'),
     path('aplikacja/social', views.AplikacjaSocialView.as_view(), name='aplikacja_social'),
+    path('aplikacja-zlozona', views.AplikacjaDziekujemyView.as_view(), name='aplikacja_dziekujemy'),
     path('mod/podanie/<int:pk>/detail', views.AplikacjaDetailView, name='aplikacja_detail'),
     path('mod/podanie/<int:pk>/detail/<int:kpk>/delete', views.AplikacjaDeleteKomentarz, name='aplikacja_delete_komentarz'),
     path('mod/podanie/<int:pk>/akceptacja', views.AplikacjaConfirm, name='aplikacja_confirm'),

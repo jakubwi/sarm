@@ -130,13 +130,16 @@ class AplikacjaRaidView(CreateView):
     template_name = 'aplikacje/aplikacja_raid.html'
     model = Podanie
     form_class = PodanieRaidForm
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('aplikacja_dziekujemy')
 
 class AplikacjaSocialView(CreateView):
     template_name = 'aplikacje/aplikacja_social.html'
     model = Podanie
     form_class = PodanieSocialForm
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('aplikacja_dziekujemy')
+
+class AplikacjaDziekujemyView(TemplateView):
+    template_name = 'aplikacje/aplikacja_dziekujemy.html'
 
 ## dodawanie moderatora / usuwanie moderatora
 @method_decorator(superuser_required(login_url='login'), name='dispatch', )

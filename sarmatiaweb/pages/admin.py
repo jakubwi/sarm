@@ -1,5 +1,8 @@
 from django.contrib import admin
-from pages.models import Klasa, Rekrutacja, Killshot
+from pages.models import Klasa, Rekrutacja, Killshot, Onas
+
+class OnasAdmin(admin.ModelAdmin):
+    list_display = ('text',)
 
 class KillshotAdmin(admin.ModelAdmin):
     list_display = ('boss', 'image', 'date')
@@ -14,6 +17,7 @@ class KlasaAdmin(admin.ModelAdmin):
 class RekrutacjaAdmin(admin.ModelAdmin):
     list_display = ('klasa', 'tank', 'heal', 'melee', 'ranged')
 
+admin.site.register(Onas, OnasAdmin)
 admin.site.register(Killshot, KillshotAdmin)
 admin.site.register(Klasa, KlasaAdmin)
 admin.site.register(Rekrutacja, RekrutacjaAdmin)

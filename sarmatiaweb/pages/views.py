@@ -2,9 +2,9 @@ from django.shortcuts import render, redirect, reverse
 from django.urls import reverse_lazy, reverse
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
-from pages.models import Rekrutacja, Klasa, Killshot
+from pages.models import Rekrutacja, Klasa, Killshot, Onas
 from rejestracja.models import Podanie
-from pages.forms import TworzenieKlasyForm, RekrutacjaNowaForm, KillshotCreateForm, RekrutacjaForm, RekrutacjaFormSet
+from pages.forms import TworzenieKlasyForm, RekrutacjaNowaForm, KillshotCreateForm, RekrutacjaForm, RekrutacjaFormSet, OnasUpdateForm
 from progress.models import Boss, Raid, Expansion
 ## login required / is_staff /admin
 from django.contrib.auth.mixins import LoginRequiredMixin, AccessMixin
@@ -20,6 +20,26 @@ class LogoutIfNotStaffMixin(AccessMixin):
             return self.handle_no_permission()
         return super(LogoutIfNotStaffMixin, self).dispatch(request, *args, **kwargs)
 
+class OnasView(TemplateView):
+    template_name = 'onas.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super(OnasView, self).get_context_data(**kwargs)
+        context['onas'] = Onas.objects.all().first()
+        return context
+
+@method_decorator(staff_member_required, name='dispatch')
+class OnasUpdateView(LogoutIfNotStaffMixin, UpdateView):
+    login_url = 'login'
+    success_url = reverse_lazy('onas')
+    model = Onas
+    template_name = 'onas_update.html'
+    form_class = OnasUpdateForm
+
+    def get_context_data(self, **kwargs):
+        context = super(OnasUpdateView, self).get_context_data(**kwargs)
+        context['onas'] = Onas.objects.all().first()
+        return context
 
 class HomePageView(ListView):   
     template_name = 'home.html'

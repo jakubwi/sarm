@@ -1,0 +1,49 @@
+{% load i18n %}
+<div class="pagination justify-content-center">
+
+
+
+            <nav>
+                <ul class="pagination pagination-sm ">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class='page-link' href="?{{ page_obj.previous_page_number.querystring }}"><span class='text-dark'>&laquo;</span></a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1"><span class='text-dark'>&laquo;</span></a>
+                        </li>
+                    {% endif %}
+        
+                    {% for page in page_obj.pages %}
+                        {% if page %}
+                            {% if page == page_obj.number %}
+                                <li class="page-item active bg-white">
+                                    <a class="page-link" href="?{{ page.querystring }}">{{ page }} <span class="sr-only">(current)</span></a>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class='page-link' href="?{{ page.querystring }}"><span class='text-dark'>{{ page }}</span></a>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">...</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+        
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class='page-link' href="?{{ page_obj.next_page_number.querystring }}"><span class='text-dark'>&raquo;</span></a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1"><span class='text-dark'>&raquo;</span></a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+
+</div>
+

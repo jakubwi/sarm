@@ -2,30 +2,51 @@
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 
+
 {% block content %}
         <div class="card shadow-sm">
           <div class="card-body">
 
             <br/>
-            <h3 class="text-dark text-left">Eventy:</h3>
-            
-                {% for object in object_list %}
-                {% if object.status == 3 %}
-
-                <a class='text-dark' href="{% url 'rp_event_detail' object.pk %}">
-                    {{ object.nazwa }}
-                    {{ object.kiedy_dzien }}
-                    {{ object.kiedy_godzina }}
-                    {{ object.miejsca }}
-                    {% if object.usuniety %}
-                      USUNIĘTY
-                    {% else %}
-                      ZAKOŃCZONY
+            <h3 class="text-dark text-center">Historia eventów:</h3>
+            <div class="row justify-content-center">
+            <div class='col-8'>
+              <br/>
+            <table class="table small">
+                <thead>
+                    <tr>
+                      <th scope="col">Data</th>
+                      <th scope="col">Godzina</th>
+                      <th scope="col">Nazwa</th>
+                      <th scope="col">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>                  
+                    {% for object in object_list %}
+                    {% if object.status == 3 %}
+                    <tr>
+                      <td>{{object.kiedy_dzien}}</td>
+                      <td>{{object.kiedy_godzina}}</td>
+                      <td>
+                      <a class='text-dark' href="{% url 'rp_event_detail' object.pk %}">
+                      <u>{{ object.nazwa }}</u>
+                      </a>
+                      </td>
+                      <td>
+                        {% if object.usuniety %}
+                          USUNIĘTY
+                        {% else %}
+                          ZAKOŃCZONY
+                        {% endif %}
+                      </td>
+                    </tr>
                     {% endif %}
-                </a><br/>
-                {% endif %}
-                {% endfor %} 
-            
+                    {% endfor %} 
+                  </tbody>
+            </table>
+            </div>
+            </div>
+            {% include "rp/rp_historia_pagination.html" %}
             <br/>
 
             <br/>

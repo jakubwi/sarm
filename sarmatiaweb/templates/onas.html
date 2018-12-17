@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body">
+    <div class="row justify-content-center">
+        <div class='col-10'>
+        <br/>
+        <h3 class="text-dark text-center"><strong>Władze gildii</strong></h3>
+        {{onas|safe}}
+            {% if user.is_staff %}
+                <p class="text-right">
+                <a class="btn btn-danger btn-sm" href="{% url 'onas_update' onas.pk %}" role="button">Edytuj</a>
+                </p>
+            {% endif %}
+        <br/>
+        <h3 class="text-dark text-center"><strong>O nas</strong></h3>
+        <p style="text-align: left;">Witaj!</p>
+        <p>Sarmatia to jedna ze starszych, polskich gildii na serwerze Shadowsong. Założona 19 lutego 2005 roku, 
+            mimo wielu zmian w szeregach rządzących nadal sprawnie funkcjonuje. </p>
+        <img src="/static/img/crea.jpg" style="float: left; margin: 2px; padding-right: 5px;">
+        <p>Jako że głównym wyznacznikiem do oceny gildii jest progress w instancjach raidowych, 
+                staramy się nie zostawać w tyle w rankingach. Możliwości kadrowe dają nam możliwość 
+                progresowania zarówno na flexowych heroikach jak i 20-osobowych mythikach. 
+                Organizujemy również raidy na niższym poziomie trudności dla osób, 
+                które nie są zainteresowane raidami progresowymi i trudniejszym contentem. 
+                Nasza obecna grupa raidująca to ludzie, którzy potrafią wykrzesać z siebie resztki 
+                sił na najtrudniejszych encounterach, a przy okazji niesamowicie się przy tym bawić.</p>
+        <p>W gronie gildiowiczów mamy również osoby zorientowane bardziej na pvp oraz maniaków 
+                achievementowych i altoholików. Krótko mówiąc - każdy znajdzie u nas coś dla siebie.</p>
+        <p>Ze względu na fakt, że nie jesteśmy gildią stricte "hardcorową", posiadamy także grupę 
+                tzw. graczy socjalnych. Osoby te nie wykazują zainteresowania raidowaniem, 
+                jednakże pragną uczestniczyć w innych aspektach życia gildiowego. 
+                W swoich szeregach mamy zarówno starych wyjadaczy jak i osoby, 
+                które dopiero rozpoczynają przygodę z WoW-em. Jesteśmy gildią bardzo zróżnicowaną wiekowo, 
+                ale większość stanowią osoby dorosłe.</p>
+        <p>Mamy własny serwer teamspeaka, na którym zazwyczaj sporo się dzieje i forum oraz autorski system dkp dla osób raidujących.</p>
+        <p>Serdecznie zapraszamy!</p>
+        </div>
+    </div>
+    </div>
+</div>
+<br/>
+{% endblock %}
