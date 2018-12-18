@@ -11,11 +11,20 @@
               <h3 class="text-dark text-center">Wypełnij podanie:</h3>
             </p>
             </h3>
-
+            {% if messages %}
+            <div class="alert alert-danger" role="alert">
+                {% for message in messages %}
+                <p class="{{ message.tags }}">{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
             <br/>
             <form action="" method="POST" class='bootstrap4'>
                 {% csrf_token %}
                 {{ form|crispy }}
+                <script src='https://www.google.com/recaptcha/api.js?hl=pl'></script>
+                <div class="g-recaptcha" data-sitekey="6LdCvoIUAAAAADWD4BazwPWFDX0wcF2QsJNPVy6j"></div>
+                <br/>
                 <input class="btn btn-secondary" type="submit" value="Wyślij">
             </form>
 

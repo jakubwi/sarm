@@ -33,7 +33,7 @@ class SignUp(CreateView):
 class NoweHasloView(FormView):
     template_name = "registration/password_reset_confirm_mod.html"
     form_class = SetPasswordForm
-    success_url = 'panel'
+    success_url = 'home'
 
     def post(self, request, uidb64=None, token=None, *arg, **kwargs):
         UserModel = settings.AUTH_USER_MODEL
@@ -51,7 +51,7 @@ class NoweHasloView(FormView):
                 user.set_password(new_password)
                 user.save()
                 messages.success(request, 'Utworzono nowe hasło!')
-                return self.form_valid(form)
+                return redirect('login')
             else:
                 messages.error(request, 'Wystąpił błąd.')
                 return self.form_invalid(form)

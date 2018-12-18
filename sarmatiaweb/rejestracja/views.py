@@ -30,9 +30,10 @@ from .filters import AplikacjeZamknieteFilter
 from django.db.models import Q
 from django.db.models import Count
 ## pagination 
-
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
-
+## reCAPTCHA
+import json
+import urllib
 
 class LogoutIfNotStaffMixin(AccessMixin):
     def dispatch(self, request, *args, **kwargs):
@@ -126,17 +127,67 @@ class RolaDeleteView(LogoutIfNotStaffMixin, DeleteView):
 class AplikacjaView(TemplateView):
     template_name = 'aplikacje/aplikacja.html'
 
-class AplikacjaRaidView(CreateView):
-    template_name = 'aplikacje/aplikacja_raid.html'
+def AplikacjaRaidView(request):
     model = Podanie
-    form_class = PodanieRaidForm
-    success_url = reverse_lazy('aplikacja_dziekujemy')
 
-class AplikacjaSocialView(CreateView):
-    template_name = 'aplikacje/aplikacja_social.html'
+    if request.method == 'POST':
+        form = PodanieRaidForm(request.POST)
+        if form.is_valid():
+
+            ### Begin reCAPTCHA validation ###
+            recaptcha_response = request.POST.get('g-recaptcha-response')
+            url = 'https://www.google.com/recaptcha/api/siteverify'
+            values = {
+                'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+                'response': recaptcha_response
+            }
+            data = urllib.parse.urlencode(values).encode()
+            req =  urllib.request.Request(url, data=data)
+            response = urllib.request.urlopen(req)
+            result = json.loads(response.read().decode())
+            ### End reCAPTCHA validation ###
+
+            if result['success']:
+                form.save()
+                return redirect('aplikacja_dziekujemy')
+            else:
+                messages.error(request, 'Błąd reCAPTCHA. Potwierdź, że nie jesteś robotem.')
+                
+            return redirect('aplikacja_raid')
+    else:
+        form = PodanieRaidForm()
+    return render(request, 'aplikacje/aplikacja_raid.html', {'form': form})
+
+def AplikacjaSocialView(request):
     model = Podanie
-    form_class = PodanieSocialForm
-    success_url = reverse_lazy('aplikacja_dziekujemy')
+
+    if request.method == 'POST':
+        form = PodanieSocialForm(request.POST)
+        if form.is_valid():
+
+            ### Begin reCAPTCHA validation ###
+            recaptcha_response = request.POST.get('g-recaptcha-response')
+            url = 'https://www.google.com/recaptcha/api/siteverify'
+            values = {
+                'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+                'response': recaptcha_response
+            }
+            data = urllib.parse.urlencode(values).encode()
+            req =  urllib.request.Request(url, data=data)
+            response = urllib.request.urlopen(req)
+            result = json.loads(response.read().decode())
+            ### End reCAPTCHA validation ###
+
+            if result['success']:
+                form.save()
+                return redirect('aplikacja_dziekujemy')
+            else:
+                messages.error(request, 'Błąd reCAPTCHA. Potwierdź, że nie jesteś robotem.')
+                
+            return redirect('aplikacja_social')
+    else:
+        form = PodanieSocialForm()
+    return render(request, 'aplikacje/aplikacja_social.html', {'form': form})
 
 class AplikacjaDziekujemyView(TemplateView):
     template_name = 'aplikacje/aplikacja_dziekujemy.html'

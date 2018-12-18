@@ -106,7 +106,7 @@ class AplikacjaDoneForm(forms.Form):
 class SetPasswordForm(forms.Form):
     error_messages = {'password_mismatch': ("Hasła nie są identyczne!"),}
     new_password1 = forms.CharField(label=("Ustaw hasło"), widget=forms.PasswordInput)
-    new_password2 = forms.CharField(label=("Potwórz hasło"), widget=forms.PasswordInput)
+    new_password2 = forms.CharField(label=("Powtórz hasło"), widget=forms.PasswordInput)
 
     def clean_new_password2(self):
         password1 = self.cleaned_data.get('new_password1')
